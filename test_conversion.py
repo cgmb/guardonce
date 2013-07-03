@@ -8,7 +8,7 @@ import difflib
 import sys
 
 parser = argparse.ArgumentParser(
-	description='Run the given script and check its output matches an expected result set.')
+	description='Run the given script and check its output matches a given directory tree.')
 parser.add_argument('script',
 	help='the script command')
 parser.add_argument('input',
