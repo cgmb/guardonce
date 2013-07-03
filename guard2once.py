@@ -10,7 +10,7 @@ parser.add_argument('directory',
 	help='the root directory of the tree to search')
 args = parser.parse_args()
 
-def defineSymbol(fileName):
+def guardSymbol(fileName):
 	return fileName.upper().replace('.', '_')
 
 def isHeaderFile(fileName):
@@ -53,4 +53,4 @@ def findAndReplaceGuard(fileName, expectedGuard):
 
 for root, dirs, files in os.walk(args.directory):
 	for fileName in files:
-		findAndReplaceGuard(join(root,fileName), defineSymbol(fileName))
+		findAndReplaceGuard(join(root,fileName), guardSymbol(fileName))
