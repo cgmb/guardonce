@@ -20,5 +20,13 @@ def testCheckGuard(directory, expectedResults):
 		foundDifferences = True
 	return foundDifferences
 
-testCheckGuard('once_tree','danger_zone/once_tree/thing.h\n')
-testCheckGuard('guard_tree','')
+testCheckGuard('once_tree',
+'''\
+danger_zone/once_tree/thing.h
+danger_zone/once_tree/mismatched_name.h
+''')
+
+testCheckGuard('guard_tree',
+'''\
+danger_zone/guard_tree/mismatched_name.h
+''')

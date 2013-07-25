@@ -36,13 +36,16 @@ def isContentProtectedByGuard(contents, expectedGuard):
 	return not (defStart < 0 or endifStart < 0)
 
 def isFileProtectedByGuard(fileName, expectedGuard):
-	if isHeaderFile(fileName):
-		with open(fileName, 'r+') as f:
-			contents = f.read()
-			return isContentProtectedByGuard(contents, expectedGuard)
+	with open(fileName, 'r+') as f:
+		contents = f.read()
+		return isContentProtectedByGuard(contents, expectedGuard)
+
+def isProblemFile(filePath, fileName):
+	return (isHeaderFile(fileName) and 
+		not isFileProtectedByGuard(filePath, guardSymbol(fileName)))
 
 for root, dirs, files in os.walk(args.directory):
 	for fileName in files:
 		filePath = join(root,fileName)
-		if not isFileProtectedByGuard(filePath, guardSymbol(fileName)):
+		if isProblemFile(filePath, fileName):
 			print filePath
