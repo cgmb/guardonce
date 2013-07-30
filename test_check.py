@@ -1,4 +1,4 @@
-#!python
+#!/usr/bin/env python
 
 import os
 import shutil
@@ -22,8 +22,8 @@ def testCheckGuard(directory, expectedResults):
 
 testCheckGuard('once_tree',
 '''\
-danger_zone/once_tree/thing.h
 danger_zone/once_tree/mismatched_name.h
+danger_zone/once_tree/BasicHeader.h
 ''')
 
 testCheckGuard('guard_tree',

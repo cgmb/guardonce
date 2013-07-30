@@ -4,8 +4,8 @@ comments
 
 // comments
 
-#ifndef THING_H
-#define THING_H
+#ifndef BASICHEADER_H
+#define BASICHEADER_H
 
 // Comments!
 #include <vector>
