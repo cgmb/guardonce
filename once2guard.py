@@ -36,7 +36,7 @@ def getNewContents(contents, desiredGuard):
 		+ '#ifndef ' + desiredGuard + '\n'
 		+ '#define ' + desiredGuard
 		+ contents[onceEnd:endifInsert] 
-		+ '#endif\n\n')
+		+ '\n#endif\n')
 
 def findAndReplaceGuard(fileName, desiredGuard):
 	if isHeaderFile(fileName):

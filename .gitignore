@@ -1,3 +1,5 @@
 *.sublime-project
 *.sublime-workspace
+*.pyc
+*.pyo
 danger_zone/
