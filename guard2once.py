@@ -3,18 +3,13 @@
 import os
 import argparse
 from os.path import join
+import crules
 
 parser = argparse.ArgumentParser(
 	description='Replace C and C++ include guards with #pragma once.')
 parser.add_argument('directory', 
 	help='the root directory of the tree to search')
 args = parser.parse_args()
-
-def guardSymbol(fileName):
-	return fileName.upper().replace('.', '_')
-
-def isHeaderFile(fileName):
-	return fileName.endswith('.h')
 
 def findGuard(contents, expectedGuard):
 	index = contents.find(expectedGuard)
@@ -41,7 +36,7 @@ def getNewContents(contents, expectedGuard):
 		+ contents[endifEnd:])
 
 def findAndReplaceGuard(fileName, expectedGuard):
-	if isHeaderFile(fileName):
+	if crules.isHeaderFile(fileName):
 		with open(fileName, 'r+') as f:
 			contents = f.read()
 			newContents = getNewContents(contents, expectedGuard)
@@ -53,4 +48,4 @@ def findAndReplaceGuard(fileName, expectedGuard):
 
 for root, dirs, files in os.walk(args.directory):
 	for fileName in files:
-		findAndReplaceGuard(join(root,fileName), guardSymbol(fileName))
+		findAndReplaceGuard(join(root,fileName), crules.guardSymbol(fileName))

@@ -11,7 +11,7 @@ def testCheckGuard(directory, expectedResults):
 	shutil.rmtree(inputDir, True)
 	shutil.copytree(directory, inputDir)
 
-	result = subprocess.check_output(['python', 'check_guard.py', inputDir])
+	result = subprocess.check_output(['python', 'checkguard.py', inputDir])
 
 	diffResults = difflib.unified_diff(result, expectedResults)
 	foundDifferences = False

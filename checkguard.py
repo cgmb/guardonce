@@ -3,18 +3,13 @@
 import os
 import argparse
 from os.path import join
+import crules
 
 parser = argparse.ArgumentParser(
 	description='Find C or C++ header files with incorrect or missing include guards.')
 parser.add_argument('directory', 
 	help='the root directory of the tree to search')
 args = parser.parse_args()
-
-def guardSymbol(fileName):
-	return fileName.upper().replace('.', '_')
-
-def isHeaderFile(fileName):
-	return fileName.endswith('.h')
 
 def findGuard(contents, expectedGuard):
 	index = contents.find(expectedGuard)
@@ -41,8 +36,8 @@ def isFileProtectedByGuard(fileName, expectedGuard):
 		return isContentProtectedByGuard(contents, expectedGuard)
 
 def isProblemFile(filePath, fileName):
-	return (isHeaderFile(fileName) and 
-		not isFileProtectedByGuard(filePath, guardSymbol(fileName)))
+	return (crules.isHeaderFile(fileName) and 
+		not isFileProtectedByGuard(filePath, crules.guardSymbol(fileName)))
 
 for root, dirs, files in os.walk(args.directory):
 	for fileName in files:
