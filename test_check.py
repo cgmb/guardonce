@@ -17,11 +17,8 @@ def testCheckGuard(directory, expectedResults, exclusions=None):
 	result = subprocess.check_output(invokation)
 
 	diffResults = difflib.unified_diff(result, expectedResults)
-	foundDifferences = False
 	for line in diffResults:
 		sys.stdout.write(line)
-		foundDifferences = True
-	return foundDifferences
 
 testCheckGuard('once_tree',
 '''\
