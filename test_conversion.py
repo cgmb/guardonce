@@ -5,6 +5,7 @@ import shutil
 import filecmp
 import difflib
 import sys
+import subprocess
 
 
 def testConversion(script,inputDir,expectedDir):
@@ -13,7 +14,8 @@ def testConversion(script,inputDir,expectedDir):
 	shutil.rmtree(output, True)
 	shutil.copytree(inputDir, output)
 
-	os.system("python " + script + " " + output)
+	invokation = ['python', script, output]
+	subprocess.check_output(invokation)
 
 	dcmp = filecmp.dircmp(output, expectedDir)
 	for f in dcmp.diff_files:

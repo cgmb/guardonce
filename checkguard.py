@@ -3,12 +3,15 @@
 import os
 import argparse
 from os.path import join
+from fnmatch import fnmatch
 import crules
 
 parser = argparse.ArgumentParser(
 	description='Find C or C++ header files with incorrect or missing include guards.')
 parser.add_argument('directory', 
 	help='the root directory of the tree to search')
+parser.add_argument('--exclude', 
+	help='exclude the given path, allowing for wildcards')
 args = parser.parse_args()
 
 def findGuard(contents, expectedGuard):
@@ -42,5 +45,7 @@ def isProblemFile(filePath, fileName):
 for root, dirs, files in os.walk(args.directory):
 	for fileName in files:
 		filePath = join(root,fileName)
+		if args.exclude and fnmatch(filePath, args.exclude):
+				continue
 		if isProblemFile(filePath, fileName):
 			print filePath
