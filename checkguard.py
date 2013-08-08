@@ -6,14 +6,6 @@ from os.path import join
 from fnmatch import fnmatch
 import crules
 
-parser = argparse.ArgumentParser(
-	description='Find C or C++ header files with incorrect or missing include guards.')
-parser.add_argument('directory', 
-	help='the root directory of the tree to search')
-parser.add_argument('--exclude', 
-	help='exclude the given path, allowing for wildcards')
-args = parser.parse_args()
-
 def findGuard(contents, expectedGuard):
 	index = contents.find(expectedGuard)
 	if index < 0:
@@ -42,10 +34,22 @@ def isProblemFile(filePath, fileName):
 	return (crules.isHeaderFile(fileName) and 
 		not isFileProtectedByGuard(filePath, crules.guardSymbol(fileName)))
 
-for root, dirs, files in os.walk(args.directory):
-	for fileName in files:
-		filePath = join(root,fileName)
-		if args.exclude and fnmatch(filePath, args.exclude):
-				continue
-		if isProblemFile(filePath, fileName):
-			print filePath
+def main():
+	parser = argparse.ArgumentParser(
+		description='Find C or C++ header files with incorrect or missing include guards.')
+	parser.add_argument('directory', 
+		help='the root directory of the tree to search')
+	parser.add_argument('--exclude', 
+		help='exclude the given path, allowing for wildcards')
+	args = parser.parse_args()
+	
+	for root, dirs, files in os.walk(args.directory):
+		for fileName in files:
+			filePath = join(root,fileName)
+			if args.exclude and fnmatch(filePath, args.exclude):
+					continue
+			if isProblemFile(filePath, fileName):
+				print filePath
+
+if __name__ == '__main__':
+	main()

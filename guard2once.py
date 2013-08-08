@@ -6,14 +6,6 @@ from os.path import join
 from fnmatch import fnmatch
 import crules
 
-parser = argparse.ArgumentParser(
-	description='Replace C and C++ include guards with #pragma once.')
-parser.add_argument('directory', 
-	help='the root directory of the tree to search')
-parser.add_argument('--exclude', 
-	help='exclude the given path, allowing for wildcards')
-args = parser.parse_args()
-
 def findGuard(contents, expectedGuard):
 	index = contents.find(expectedGuard)
 	if index < 0:
@@ -48,10 +40,21 @@ def findAndReplaceGuard(fileName, expectedGuard):
 				f.seek(0)
 				f.write(newContents)
 
+def main():
+	parser = argparse.ArgumentParser(
+		description='Replace C and C++ include guards with #pragma once.')
+	parser.add_argument('directory', 
+		help='the root directory of the tree to search')
+	parser.add_argument('--exclude', 
+		help='exclude the given path, allowing for wildcards')
+	args = parser.parse_args()
 
-for root, dirs, files in os.walk(args.directory):
-	for fileName in files:
-		filePath = join(root,fileName)
-		if args.exclude and fnmatch(filePath, args.exclude):
-			continue
-		findAndReplaceGuard(filePath, crules.guardSymbol(fileName))
+	for root, dirs, files in os.walk(args.directory):
+		for fileName in files:
+			filePath = join(root,fileName)
+			if args.exclude and fnmatch(filePath, args.exclude):
+				continue
+			findAndReplaceGuard(filePath, crules.guardSymbol(fileName))
+
+if __name__ == '__main__':
+	main()
