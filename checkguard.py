@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 
-import os
 import argparse
-from os.path import join
-from fnmatch import fnmatch
 import crules
+import headerfind
 
 def findGuard(contents, expectedGuard):
 	index = contents.find(expectedGuard)
@@ -30,9 +28,9 @@ def isFileProtectedByGuard(fileName, expectedGuard):
 		contents = f.read()
 		return isContentProtectedByGuard(contents, expectedGuard)
 
-def isProblemFile(filePath, fileName):
-	return (crules.isHeaderFile(fileName) and 
-		not isFileProtectedByGuard(filePath, crules.guardSymbol(fileName)))
+def printNameIfGuardless(filePath, fileName):
+	if not isFileProtectedByGuard(filePath, crules.guardSymbol(fileName)):
+		print filePath
 
 def main():
 	parser = argparse.ArgumentParser(
@@ -43,13 +41,7 @@ def main():
 		help='exclude the given path, allowing for wildcards')
 	args = parser.parse_args()
 	
-	for root, dirs, files in os.walk(args.directory):
-		for fileName in files:
-			filePath = join(root,fileName)
-			if args.exclude and fnmatch(filePath, args.exclude):
-					continue
-			if isProblemFile(filePath, fileName):
-				print filePath
+	headerfind.applyToHeaders(printNameIfGuardless, args.directory, args.exclude)
 
 if __name__ == '__main__':
 	main()

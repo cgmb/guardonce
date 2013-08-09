@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 
-import os
 import argparse
-from os.path import join
-from fnmatch import fnmatch
 import crules
+import headerfind
 
 def findGuard(contents, expectedGuard):
 	index = contents.find(expectedGuard)
@@ -30,15 +28,14 @@ def getNewContents(contents, expectedGuard):
 		+ contents[defEnd:endifStart] 
 		+ contents[endifEnd:])
 
-def findAndReplaceGuard(fileName, expectedGuard):
-	if crules.isHeaderFile(fileName):
-		with open(fileName, 'r+') as f:
-			contents = f.read()
-			newContents = getNewContents(contents, expectedGuard)
-			if contents != newContents:
-				f.truncate(len(newContents))
-				f.seek(0)
-				f.write(newContents)
+def findAndReplaceGuard(filePath, fileName):
+	with open(filePath, 'r+') as f:
+		contents = f.read()
+		newContents = getNewContents(contents, crules.guardSymbol(fileName))
+		if contents != newContents:
+			f.truncate(len(newContents))
+			f.seek(0)
+			f.write(newContents)
 
 def main():
 	parser = argparse.ArgumentParser(
@@ -49,12 +46,7 @@ def main():
 		help='exclude the given path, allowing for wildcards')
 	args = parser.parse_args()
 
-	for root, dirs, files in os.walk(args.directory):
-		for fileName in files:
-			filePath = join(root,fileName)
-			if args.exclude and fnmatch(filePath, args.exclude):
-				continue
-			findAndReplaceGuard(filePath, crules.guardSymbol(fileName))
+	headerfind.applyToHeaders(findAndReplaceGuard, args.directory, args.exclude)
 
 if __name__ == '__main__':
 	main()
