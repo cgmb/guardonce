@@ -2,41 +2,58 @@
 
 import os
 import shutil
-import difflib
 import sys
-import subprocess
+import checkguard
+import unittest
+from textwrap import dedent
+from StringIO import StringIO
 
-def testCheckGuard(directory, expectedResults, exclusions=None):
-	inputDir = os.path.join("danger_zone/", directory)
-	shutil.rmtree(inputDir, True)
-	shutil.copytree(directory, inputDir)
+def setupDangerZone(inputDir):
+	zoneDir = os.path.join("danger_zone/", inputDir)
+	shutil.rmtree(zoneDir, True)
+	shutil.copytree(inputDir, zoneDir)
+	return zoneDir
 
-	invokation = ['python', 'checkguard.py', inputDir]
+def runCheckGuard(directory, exclusions=None):
+	checkDir = setupDangerZone(directory)
+
+	invokation = [checkDir]
 	if exclusions is not None:
 		invokation.append('--exclude=' + exclusions)
-	result = subprocess.check_output(invokation)
+	checkguard.main(invokation)
+	return sys.stdout.getvalue()
 
-	diffResults = difflib.unified_diff(result, expectedResults)
-	for line in diffResults:
-		sys.stdout.write(line)
+class TestCheckGuard(unittest.TestCase):
 
-testCheckGuard('once_tree',
-'''\
-danger_zone/once_tree/mismatched_name.h
-danger_zone/once_tree/BasicHeader.h
-''')
+	def setUp(self):
+		self.saved_out = sys.stdout
+		sys.stdout = StringIO()
 
-testCheckGuard('guard_tree',
-'''\
-danger_zone/guard_tree/mismatched_name.h
-''')
+	def tearDown(self):
+		sys.stdout = self.saved_out
 
-testCheckGuard('guard_tree',
-'''''', 
-'*/mismatched_name.h')
+	def test_once_tree(self):
+		self.assertEqual(runCheckGuard('once_tree'), dedent(
+		'''\
+		danger_zone/once_tree/mismatched_name.h
+		danger_zone/once_tree/BasicHeader.h
+		'''))
 
-testCheckGuard('guard_tree',
-'''\
-danger_zone/guard_tree/mismatched_name.h
-''', 
-'*/some_other_name.h')
+	def test_guard_tree(self):
+		self.assertEqual(runCheckGuard('guard_tree'), dedent(
+		'''\
+		danger_zone/guard_tree/mismatched_name.h
+		'''))
+
+	def test_exclusion_match(self):
+		self.assertEqual(runCheckGuard('guard_tree', '*/mismatched_name.h'), dedent(
+		''))
+
+	def test_exclusion_no_match(self):
+		self.assertEqual(runCheckGuard('guard_tree', '*/some_other_name.h'), dedent(
+		'''\
+		danger_zone/guard_tree/mismatched_name.h
+		'''))
+
+if __name__ == '__main__':
+	unittest.main()
