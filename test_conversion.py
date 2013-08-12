@@ -5,7 +5,9 @@ import shutil
 import filecmp
 import difflib
 import sys
-import subprocess
+import guard2once
+import once2guard
+import unittest
 
 def setupDangerZone(inputDir):
 	# http://youtu.be/k3-zaTr6OUo
@@ -14,25 +16,44 @@ def setupDangerZone(inputDir):
 	shutil.copytree(inputDir, output)
 	return output
 
-def testConversion(script,inputDir,expectedDir,exclusions=None):
+def convertedOutputMatchesExpectations(script,inputDir,expectedDir,exclusions=None):
 	output = setupDangerZone(inputDir)
 
-	invokation = ['python', script, output]
+	invokation = [output]
 	if exclusions is not None:
 		invokation.append('--exclude=' + exclusions)
-	subprocess.check_output(invokation)
+	script(invokation)
 
 	dcmp = filecmp.dircmp(output, expectedDir)
+	noDifferences = True
 	for f in dcmp.diff_files:
 		with open(os.path.join(output, f), 'r') as leftFile:
 			with open(os.path.join(expectedDir, f), 'r') as rightFile:
 				for line in difflib.unified_diff(leftFile.readlines(), rightFile.readlines(), 
 												fromfile=leftFile.name, tofile=rightFile.name):
+					noDifferences = False
 					sys.stdout.write(line)
+	return noDifferences
 
-testConversion('once2guard.py', 'once_tree', 'guard_tree')
-testConversion('guard2once.py', 'guard_tree', 'once_tree')
-testConversion('once2guard.py', 'exclusion_tree/once', 'exclusion_tree/once_expected', 
-	'*/ExcludedHeader.h')
-testConversion('guard2once.py', 'exclusion_tree/guard', 'exclusion_tree/guard_expected', 
-	'*/ExcludedHeader.h')
+class TestConversion(unittest.TestCase):
+
+	def test_once2guard(self):
+		self.assertTrue(convertedOutputMatchesExpectations(
+			once2guard.main, 'once_tree', 'guard_tree'))
+
+	def test_guard2once(self):
+		self.assertTrue(convertedOutputMatchesExpectations(
+			guard2once.main, 'guard_tree', 'once_tree'))
+
+	def test_once2guard_excludes(self):
+		self.assertTrue(convertedOutputMatchesExpectations(
+			once2guard.main, 'exclusion_tree/once', 'exclusion_tree/once_expected', 
+			'*/ExcludedHeader.h'))
+
+	def test_guard2once_excludes(self):
+		self.assertTrue(convertedOutputMatchesExpectations(
+			guard2once.main, 'exclusion_tree/guard', 'exclusion_tree/guard_expected', 
+			'*/ExcludedHeader.h'))
+
+if __name__ == '__main__':
+	unittest.main()

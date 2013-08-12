@@ -3,6 +3,7 @@
 import argparse
 import headerfind
 import crules
+import sys
 
 def findOnce(contents):
 	token = '#pragma once'
@@ -35,16 +36,16 @@ def findAndReplaceGuard(filePath, fileName):
 			f.seek(0)
 			f.write(newContents)
 
-def main():
+def main(arglist):
 	parser = argparse.ArgumentParser(
 		description='Replace #pragma once with C and C++ include guards.')
 	parser.add_argument('directory', 
 		help='the root directory of the tree to search')
 	parser.add_argument('--exclude', 
 		help='exclude the given path, allowing for wildcards')
-	args = parser.parse_args()
+	args = parser.parse_args(arglist)
 
 	headerfind.applyToHeaders(findAndReplaceGuard, args.directory, args.exclude)
 
 if __name__ == '__main__':
-	main()
+	main(sys.argv[1:])
