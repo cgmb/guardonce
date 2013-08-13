@@ -18,6 +18,8 @@ def findGuard(contents, expectedGuard):
 def findFinalEndif(contents):
 	index = contents.rfind('#endif')
 	endIndex = contents.find('\n', index) + 1
+	if endIndex == 0:
+		endIndex = len(contents)
 	return index, endIndex
 
 def getNewContents(contents, expectedGuard):

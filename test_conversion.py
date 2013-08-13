@@ -97,6 +97,12 @@ class TestConversion(unittest.TestCase):
 		self.assertEqual(runWithArgstring(guard2once.main, '-r guard_tree/BasicHeader.h').stderr,
 			"[Errno 20] Not a directory: 'guard_tree/BasicHeader.h'\n")
 
+	def test_guard2once_no_newline_at_eof(self):
+		runOnFile(guard2once.main, 'irreversable_tree/no_newline_at_eof/BasicHeader.h')
+		self.assertMultiLineEqual(
+			contentsOf('danger_zone/irreversable_tree/no_newline_at_eof/BasicHeader.h'), 
+			contentsOf('once_tree/BasicHeader.h'))
+
 	def test_guard2once_tree(self):
 		self.assertTrue(convertedOutputMatchesExpectations(
 			guard2once.main, 'guard_tree', 'once_tree'))
