@@ -40,21 +40,26 @@ def printNameIfGuardless(filePath, fileName):
 def main(arglist):
 	parser = argparse.ArgumentParser(
 		description='Find C or C++ header files with incorrect or missing include guards.')
-	parser.add_argument('file',
-		nargs='?',
-		help='the file to check')
+	parser.add_argument('files',
+		nargs='+',
+		help='the file(s) to check; directories require the recursive option')
 	parser.add_argument('-r',
-		dest='directory',
-		help='the root directory of the tree to search')
+		action='store_true',
+		dest='recursive',
+		help='recursively search directories for headers')
 	parser.add_argument('--exclude', 
 		help='exclude the given path, allowing for wildcards')
 	args = parser.parse_args(arglist)
 	
-	if args.directory is not None:
-		headerfind.applyToHeaders(printNameIfGuardless, args.directory, args.exclude)
-	
-	if args.file is not None:
-		printNameIfGuardless(args.file, os.path.basename(args.file))
+	for fileName in args.files:
+		if os.path.isfile(fileName):
+			printNameIfGuardless(fileName, os.path.basename(fileName))
+		elif os.path.isdir(fileName):
+			if args.recursive:
+				headerfind.applyToHeaders(printNameIfGuardless, fileName, args.exclude)
+			else:
+				print >> sys.stderr, ("'" + fileName + "'"
+					" is a directory. Search it for headers with -r")
 
 if __name__ == '__main__':
 	main(sys.argv[1:])
