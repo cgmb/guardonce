@@ -26,7 +26,7 @@ def isContentProtectedByGuard(contents, expectedGuard):
 	return not (defStart < 0 or endifStart < 0)
 
 def isFileProtectedByGuard(fileName, expectedGuard):
-	with open(fileName, 'r+') as f:
+	with open(fileName, 'r') as f:
 		contents = f.read()
 		return isContentProtectedByGuard(contents, expectedGuard)
 

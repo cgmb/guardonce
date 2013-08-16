@@ -11,20 +11,21 @@ from StringIO import StringIO
 
 Output = namedtuple('Output', ['stdout', 'stderr'])
 
-def setupDangerZone(inputDir):
-	zoneDir = os.path.join("danger_zone/", inputDir)
-	shutil.rmtree(zoneDir, True)
-	shutil.copytree(inputDir, zoneDir)
-	return zoneDir
+def setupFileInDangerZone(fileName, permissions):
+	output = os.path.join('danger_zone/default/')
+	shutil.rmtree(output, True)
+	os.makedirs(output)
+	outputFileName = os.path.join(output, os.path.basename(fileName))
+	shutil.copy(fileName, output)
+	os.chmod(outputFileName, permissions)
+	return outputFileName
 
 def runCheckGuardWithArgstring(argstring):
 	checkguard.main(argstring.split())
 	return Output(sys.stdout.getvalue(), sys.stderr.getvalue())
 
 def runCheckGuard(directory, exclusions=None):
-	checkDir = setupDangerZone(directory)
-
-	invokation = ['-r', checkDir]
+	invokation = ['-r', directory]
 	if exclusions is not None:
 		invokation.append('--exclude=' + exclusions)
 	checkguard.main(invokation)
@@ -32,8 +33,7 @@ def runCheckGuard(directory, exclusions=None):
 
 def runCheckGuardOnFile(inputFile):
 	dirName, baseName = os.path.split(inputFile)
-	checkDir = setupDangerZone(dirName)
-	checkFile = os.path.join(checkDir, baseName)
+	checkFile = os.path.join(dirName, baseName)
 
 	invokation = [checkFile]
 	checkguard.main(invokation)
@@ -60,26 +60,26 @@ class TestCheckGuard(unittest.TestCase):
 	def test_mismatched_guard_file(self):
 		self.assertEqual(runCheckGuardOnFile('guard_tree/mismatched_name.h').stdout, dedent(
 		'''\
-		danger_zone/guard_tree/mismatched_name.h
+		guard_tree/mismatched_name.h
 		'''))
 
 	def test_non_header_file(self):
 		self.assertEqual(runCheckGuardOnFile('guard_tree/non_header_file.txt').stdout, dedent(
 		'''\
-		danger_zone/guard_tree/non_header_file.txt
+		guard_tree/non_header_file.txt
 		'''))
 
 	def test_once_tree(self):
 		self.assertEqual(runCheckGuard('once_tree').stdout, dedent(
 		'''\
-		danger_zone/once_tree/mismatched_name.h
-		danger_zone/once_tree/BasicHeader.h
+		once_tree/mismatched_name.h
+		once_tree/BasicHeader.h
 		'''))
 
 	def test_guard_tree(self):
 		self.assertEqual(runCheckGuard('guard_tree').stdout, dedent(
 		'''\
-		danger_zone/guard_tree/mismatched_name.h
+		guard_tree/mismatched_name.h
 		'''))
 
 	def test_exclusion_match(self):
@@ -89,7 +89,7 @@ class TestCheckGuard(unittest.TestCase):
 	def test_exclusion_no_match(self):
 		self.assertEqual(runCheckGuard('guard_tree', '*/some_other_name.h').stdout, dedent(
 		'''\
-		danger_zone/guard_tree/mismatched_name.h
+		guard_tree/mismatched_name.h
 		'''))
 
 	def test_error_on_passing_file_as_directory(self):
@@ -99,6 +99,11 @@ class TestCheckGuard(unittest.TestCase):
 	def test_error_on_passing_directory_as_file(self):
 		self.assertEqual(runCheckGuardWithArgstring('guard_tree').stderr, 
 			"[Errno 21] Is a directory: 'guard_tree'\n")
+
+	def test_read_only_mismatched_guard_file(self):
+		fileName = setupFileInDangerZone('guard_tree/mismatched_name.h', 0444)
+		self.assertEqual(runCheckGuardOnFile(fileName).stdout, 
+			fileName + '\n')
 
 if __name__ == '__main__':
 	unittest.main()
