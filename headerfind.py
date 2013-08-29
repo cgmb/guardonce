@@ -17,3 +17,25 @@ def applyToHeaders(func,directory,exclude):
 				continue
 			if crules.isHeaderFile(fileName):
 				func(filePath, fileName)
+
+def addArgs(parser):
+	parser.add_argument('files',
+		nargs='+',
+		help='the file(s) to check; directories require the recursive option')
+	parser.add_argument('-r',
+		action='store_true',
+		dest='recursive',
+		help='recursively search directories for headers')
+	parser.add_argument('--exclude', 
+		help='exclude the given path, allowing for wildcards')
+
+def processHeaders(args, func):
+	for fileName in args.files:
+		if os.path.isfile(fileName):
+			func(fileName, os.path.basename(fileName))
+		elif os.path.isdir(fileName):
+			if args.recursive:
+				applyToHeaders(func, fileName, args.exclude)
+			else:
+				print >> sys.stderr, ("'" + fileName + "'"
+					" is a directory. Search it for headers with -r")

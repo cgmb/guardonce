@@ -47,21 +47,9 @@ def findAndReplaceGuard(filePath, fileName):
 def main(arglist):
 	parser = argparse.ArgumentParser(
 		description='Replace C and C++ include guards with #pragma once.')
-	parser.add_argument('file',
-		nargs='?',
-		help='the file to check')
-	parser.add_argument('-r',
-		dest='directory',
-		help='the root directory of the tree to search')
-	parser.add_argument('--exclude', 
-		help='exclude the given path, allowing for wildcards')
+	headerfind.addArgs(parser)
 	args = parser.parse_args(arglist)
-
-	if args.directory is not None:
-		headerfind.applyToHeaders(findAndReplaceGuard, args.directory, args.exclude)
-
-	if args.file is not None:
-		findAndReplaceGuard(args.file, os.path.basename(args.file))
+	headerfind.processHeaders(args, findAndReplaceGuard)
 
 if __name__ == '__main__':
 	main(sys.argv[1:])

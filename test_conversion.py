@@ -13,20 +13,33 @@ from StringIO import StringIO
 
 Output = namedtuple('Output', ['stdout', 'stderr'])
 
-def setupDangerZone(inputDir):
+def setupDangerZone(inputPath):
 	# http://youtu.be/k3-zaTr6OUo
-	output = os.path.join("danger_zone/", inputDir)
-	shutil.rmtree(output, True)
-	shutil.copytree(inputDir, output)
-	return output
+	if os.path.isdir(inputPath):
+		output = os.path.join('danger_zone', inputPath)
+		shutil.rmtree(output, True)
+		shutil.copytree(inputPath, output)
+		return output
+	return inputPath
 
-def convertedOutputMatchesExpectations(script,inputDir,expectedDir,exclusions=None):
-	output = setupDangerZone(inputDir)
+def setupFilesInDangerZone(inputPaths):
+	outputPaths = []
+	for path in inputPaths:
+		if os.path.isfile(path):
+			dirName, baseName = os.path.split(path)
+			checkDir = setupDangerZone(dirName)
+			outputPaths.append(os.path.join(checkDir, baseName))
+		else:
+			raise Exception('Only files supported')
+	return outputPaths
+
+def convertedOutputMatchesExpectations(script,inputPath,expectedDir,exclusions=None):
+	output = setupDangerZone(inputPath)
 
 	invokation = ['-r', output]
 	if exclusions is not None:
 		invokation.append('--exclude=' + exclusions)
-	script(invokation)
+	script.main(invokation)
 
 	dcmp = filecmp.dircmp(output, expectedDir)
 	noDifferences = True
@@ -39,13 +52,15 @@ def convertedOutputMatchesExpectations(script,inputDir,expectedDir,exclusions=No
 					sys.stdout.write(line)
 	return noDifferences
 
-def runOnFile(script,inputFile):
+def runScript(script,inputFile,recursive=False):
 	dirName, baseName = os.path.split(inputFile)
 	checkDir = setupDangerZone(dirName)
 	transformFile = os.path.join(checkDir, baseName)
 
 	invokation = [transformFile]
-	script(invokation)
+	if recursive:
+		invokation.append('-r')
+	script.main(invokation)
 	return Output(sys.stdout.getvalue(), sys.stderr.getvalue())
 
 def contentsOf(fileName):
@@ -53,7 +68,7 @@ def contentsOf(fileName):
 		return f.read()
 
 def runWithArgstring(script,argstring):
-	script(argstring.split())
+	script.main(argstring.split())
 	return Output(sys.stdout.getvalue(), sys.stderr.getvalue())
 
 class TestConversion(unittest.TestCase):
@@ -69,60 +84,90 @@ class TestConversion(unittest.TestCase):
 		sys.stdout = self.saved_out
 		sys.stderr = self.saved_err
 
+	def captured_stdout():
+		return sys.stdout.getvalue()
+
+	def captured_stderr():
+		return sys.stderr.getvalue()
+
 	def test_once2guard_standard_file(self):
-		runOnFile(once2guard.main, 'once_tree/BasicHeader.h')
+		runScript(once2guard, 'once_tree/BasicHeader.h')
 		self.assertMultiLineEqual(
 			contentsOf('danger_zone/once_tree/BasicHeader.h'), 
 			contentsOf('guard_tree/BasicHeader.h'))
 
 	def test_guard2once_standard_file(self):
-		runOnFile(guard2once.main, 'guard_tree/BasicHeader.h')
+		runScript(guard2once, 'guard_tree/BasicHeader.h')
 		self.assertMultiLineEqual(
 			contentsOf('danger_zone/guard_tree/BasicHeader.h'), 
 			contentsOf('once_tree/BasicHeader.h'))
 
-	def test_once2guard_directory_as_file(self):
-		self.assertEqual(runWithArgstring(once2guard.main, 'once_tree').stderr,
-			"[Errno 21] Is a directory: 'once_tree'\n")
+	def test_once2guard_multi_file(self):
+		files = setupFilesInDangerZone(['once_tree/mismatched_name.h', 'once_tree/BasicHeader.h'])
+		runWithArgstring(once2guard, ' '.join(files))
+		self.assertMultiLineEqual(
+			contentsOf('danger_zone/once_tree/BasicHeader.h'), 
+			contentsOf('guard_tree/BasicHeader.h'))
+		self.assertMultiLineEqual(
+			contentsOf('danger_zone/guard_tree/mismatched_name.h'), 
+			contentsOf('guard_tree/mismatched_name.h'))
 
-	def test_once2guard_file_as_directory(self):
-		self.assertEqual(runWithArgstring(once2guard.main, '-r once_tree/BasicHeader.h').stderr,
-			"[Errno 20] Not a directory: 'once_tree/BasicHeader.h'\n")
+	def test_guard2once_multi_file(self):
+		files = setupFilesInDangerZone(['guard_tree/mismatched_name.h', 'guard_tree/BasicHeader.h'])
+		runWithArgstring(guard2once, ' '.join(files))
+		self.assertMultiLineEqual(
+			contentsOf('danger_zone/guard_tree/BasicHeader.h'), 
+			contentsOf('once_tree/BasicHeader.h'))
+		self.assertMultiLineEqual(
+			contentsOf('danger_zone/guard_tree/mismatched_name.h'), 
+			contentsOf('once_tree/mismatched_name.h'))
+
+	def test_once2guard_directory_as_file(self):
+		self.assertEqual(runScript(once2guard, 'once_tree').stderr,
+			"'once_tree' is a directory. Search it for headers with -r\n")
+
+	def test_once2guard_standard_file_recursive(self):
+		runScript(once2guard, 'once_tree/BasicHeader.h', recursive=True)
+		self.assertMultiLineEqual(
+			contentsOf('danger_zone/once_tree/BasicHeader.h'), 
+			contentsOf('guard_tree/BasicHeader.h'))
 
 	def test_guard2once_directory_as_file(self):
-		self.assertEqual(runWithArgstring(guard2once.main, 'guard_tree').stderr,
-			"[Errno 21] Is a directory: 'guard_tree'\n")
+		self.assertEqual(runWithArgstring(guard2once, 'guard_tree').stderr,
+			"'guard_tree' is a directory. Search it for headers with -r\n")
 
-	def test_guard2once_file_as_directory(self):
-		self.assertEqual(runWithArgstring(guard2once.main, '-r guard_tree/BasicHeader.h').stderr,
-			"[Errno 20] Not a directory: 'guard_tree/BasicHeader.h'\n")
+	def test_guard2once_standard_file_recursive(self):
+		runScript(guard2once, 'guard_tree/BasicHeader.h', recursive=True)
+		self.assertMultiLineEqual(
+			contentsOf('danger_zone/guard_tree/BasicHeader.h'), 
+			contentsOf('once_tree/BasicHeader.h'))
 
 	def test_guard2once_no_newline_at_eof(self):
-		runOnFile(guard2once.main, 'irreversable_tree/no_newline_at_eof/BasicHeader.h')
+		runScript(guard2once, 'irreversable_tree/no_newline_at_eof/BasicHeader.h')
 		self.assertMultiLineEqual(
 			contentsOf('danger_zone/irreversable_tree/no_newline_at_eof/BasicHeader.h'), 
 			contentsOf('once_tree/BasicHeader.h'))
 
 	def test_guard2once_tree(self):
 		self.assertTrue(convertedOutputMatchesExpectations(
-			guard2once.main, 'guard_tree', 'once_tree'))
+			guard2once, 'guard_tree', 'once_tree'))
 
 	def test_once2guard_tree(self):
 		self.assertTrue(convertedOutputMatchesExpectations(
-			once2guard.main, 'once_tree', 'guard_tree'))
+			once2guard, 'once_tree', 'guard_tree'))
 
 	def test_guard2once_tree(self):
 		self.assertTrue(convertedOutputMatchesExpectations(
-			guard2once.main, 'guard_tree', 'once_tree'))
+			guard2once, 'guard_tree', 'once_tree'))
 
 	def test_once2guard_excludes(self):
 		self.assertTrue(convertedOutputMatchesExpectations(
-			once2guard.main, 'exclusion_tree/once', 'exclusion_tree/once_expected', 
+			once2guard, 'exclusion_tree/once', 'exclusion_tree/once_expected', 
 			'*/ExcludedHeader.h'))
 
 	def test_guard2once_excludes(self):
 		self.assertTrue(convertedOutputMatchesExpectations(
-			guard2once.main, 'exclusion_tree/guard', 'exclusion_tree/guard_expected', 
+			guard2once, 'exclusion_tree/guard', 'exclusion_tree/guard_expected', 
 			'*/ExcludedHeader.h'))
 
 if __name__ == '__main__':
