@@ -22,11 +22,12 @@ def addArgs(parser):
 	parser.add_argument('files',
 		nargs='+',
 		help='the file(s) to check; directories require the recursive option')
-	parser.add_argument('-r',
+	parser.add_argument('-r','--recursive',
 		action='store_true',
 		dest='recursive',
 		help='recursively search directories for headers')
-	parser.add_argument('--exclude', 
+	parser.add_argument('-e','--exclude', 
+		dest='exclude',
 		help='exclude the given path, allowing for wildcards')
 
 def processHeaders(args, func):
