@@ -10,6 +10,9 @@ def findGuard(contents, expectedGuard):
 	index = contents.find(expectedGuard)
 	if index < 0:
 		return -1, -1
+	if not (contents[index - 1].isspace() and
+			contents[index + len(expectedGuard)].isspace()):
+		return -1, -1
 	index = contents.rfind('#ifndef', 0, index)
 	endIndex = contents.find('#define', index)
 	endIndex = contents.find('\n', endIndex)
