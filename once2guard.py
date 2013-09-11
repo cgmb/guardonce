@@ -40,7 +40,7 @@ def findAndReplaceGuard(filePath, fileName):
 	except Exception as e:
 		print >> sys.stderr, e
 
-def main(arglist):
+def main(arglist=None):
 	parser = argparse.ArgumentParser(
 		description='Replace #pragma once with C and C++ include guards.')
 	headerfind.addArgs(parser)
@@ -48,4 +48,4 @@ def main(arglist):
 	headerfind.processHeaders(args, findAndReplaceGuard)
 
 if __name__ == '__main__':
-	main(sys.argv[1:])
+	main()
