@@ -4,16 +4,20 @@ import sys
 import os
 from os.path import join
 from fnmatch import fnmatch
+from functools import partial
 import crules
 
 def printError(error):
 	print >> sys.stderr, error
 
-def applyToHeaders(func,directory,exclude):
+def shouldBeExcluded(filePath, exclusions):
+	return any(map(partial(fnmatch, filePath), exclusions))
+
+def applyToHeaders(func,directory,exclusions):
 	for root, dirs, files in os.walk(directory, onerror=printError):
 		for fileName in files:
 			filePath = join(root,fileName)
-			if exclude and fnmatch(filePath, exclude):
+			if shouldBeExcluded(filePath, exclusions):
 				continue
 			if crules.isHeaderFile(fileName):
 				func(filePath, fileName)
@@ -27,7 +31,10 @@ def addArgs(parser):
 		dest='recursive',
 		help='recursively search directories for headers')
 	parser.add_argument('-e','--exclude', 
-		dest='exclude',
+		action='append',
+		dest='exclusions',
+		metavar='exclude',
+		default=[],
 		help='exclude the given path, allowing for wildcards')
 
 def processHeaders(args, func):
@@ -36,7 +43,7 @@ def processHeaders(args, func):
 			func(fileName, os.path.basename(fileName))
 		elif os.path.isdir(fileName):
 			if args.recursive:
-				applyToHeaders(func, fileName, args.exclude)
+				applyToHeaders(func, fileName, args.exclusions)
 			else:
 				print >> sys.stderr, ("'" + fileName + "'"
 					" is a directory. Search it for headers with -r")

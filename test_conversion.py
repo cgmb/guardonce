@@ -33,12 +33,12 @@ def setupFilesInDangerZone(inputPaths):
 			raise Exception('Only files supported')
 	return outputPaths
 
-def convertedOutputMatchesExpectations(script,inputPath,expectedDir,exclusions=None):
+def convertedOutputMatchesExpectations(script,inputPath,expectedDir,exclusions=[]):
 	output = setupDangerZone(inputPath)
 
 	invokation = ['-r', output]
-	if exclusions is not None:
-		invokation.append('--exclude=' + exclusions)
+	for exclusion in exclusions:
+		invokation.append('--exclude=' + exclusion)
 	script.main(invokation)
 
 	dcmp = filecmp.dircmp(output, expectedDir)
@@ -84,10 +84,10 @@ class TestConversion(unittest.TestCase):
 		sys.stdout = self.saved_out
 		sys.stderr = self.saved_err
 
-	def captured_stdout():
+	def captured_stdout(self):
 		return sys.stdout.getvalue()
 
-	def captured_stderr():
+	def captured_stderr(self):
 		return sys.stderr.getvalue()
 
 	def test_once2guard_standard_file(self):
@@ -161,14 +161,16 @@ class TestConversion(unittest.TestCase):
 			guard2once, 'guard_tree', 'once_tree'))
 
 	def test_once2guard_excludes(self):
-		self.assertTrue(convertedOutputMatchesExpectations(
+		passed = convertedOutputMatchesExpectations(
 			once2guard, 'exclusion_tree/once', 'exclusion_tree/once_expected', 
-			'*/ExcludedHeader.h'))
+			['*/ExcludedHeader.h','*/OtherExcludedHeader.h'])
+		self.assertTrue(passed)
 
 	def test_guard2once_excludes(self):
-		self.assertTrue(convertedOutputMatchesExpectations(
+		passed = convertedOutputMatchesExpectations(
 			guard2once, 'exclusion_tree/guard', 'exclusion_tree/guard_expected', 
-			'*/ExcludedHeader.h'))
+			['*/ExcludedHeader.h','*/OtherExcludedHeader.h'])
+		self.assertTrue(passed)
 
 if __name__ == '__main__':
 	unittest.main()
