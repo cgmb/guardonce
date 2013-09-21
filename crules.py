@@ -4,4 +4,4 @@ def guardSymbol(fileName):
 	return fileName.upper().replace('.', '_')
 
 def isHeaderFile(fileName):
-	return fileName.endswith('.h')
+	return fileName.endswith('.h') or fileName.endswith('.hpp')

@@ -72,6 +72,7 @@ class TestCheckGuard(unittest.TestCase):
 	def test_once_tree(self):
 		self.assertEqual(runCheckGuard('once_tree').stdout,
 		'once_tree/mismatched_name.h\n'
+		'once_tree/BasicHeader.hpp\n'
 		'once_tree/BasicHeader.h\n')
 
 	def test_guard_tree(self):
