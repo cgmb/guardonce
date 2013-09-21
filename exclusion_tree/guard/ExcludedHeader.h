@@ -24,13 +24,4 @@ private:
    std::vector<int> stuff_;
 };
 
-
-
-
-
-
-
-
-
-
 #endif

@@ -23,12 +23,3 @@ private:
    std::vector<int> stuff_;
 };
 
-
-
-
-
-
-
-
-
-
