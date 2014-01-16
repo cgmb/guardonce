@@ -10,6 +10,15 @@ from StringIO import StringIO
 
 Output = namedtuple('Output', ['stdout', 'stderr'])
 
+def lines_counts(textblock):
+	line_hash = {}
+	for line in textblock.split('\n'):
+		try:
+			line_hash[line] += 1
+		except KeyError:
+			line_hash[line] = 1
+	return line_hash
+
 def setupFileInDangerZone(fileName, permissions):
 	output = os.path.join('danger_zone/default/')
 	shutil.rmtree(output, True)
@@ -64,16 +73,19 @@ class TestCheckGuard(unittest.TestCase):
 		'guard_tree/non_header_file.txt\n')
 
 	def test_multiple_header_files(self):
-		self.assertEqual(runCheckGuardWithArgstring('guard_tree/BasicHeader.h '
-			'guard_tree/non_header_file.txt guard_tree/mismatched_name.h').stdout,
-		'guard_tree/non_header_file.txt\n'
-		'guard_tree/mismatched_name.h\n')
+		self.assertEqual(lines_counts(
+			runCheckGuardWithArgstring('guard_tree/BasicHeader.h '
+			'guard_tree/non_header_file.txt guard_tree/mismatched_name.h').stdout),
+		lines_counts(
+			'guard_tree/non_header_file.txt\n'
+			'guard_tree/mismatched_name.h\n'))
 
 	def test_once_tree(self):
-		self.assertEqual(runCheckGuard('once_tree').stdout,
-		'once_tree/mismatched_name.h\n'
-		'once_tree/BasicHeader.hpp\n'
-		'once_tree/BasicHeader.h\n')
+		self.assertEqual(lines_counts(runCheckGuard('once_tree').stdout),
+		lines_counts(
+			'once_tree/mismatched_name.h\n'
+			'once_tree/BasicHeader.hpp\n'
+			'once_tree/BasicHeader.h\n'))
 
 	def test_guard_tree(self):
 		self.assertEqual(runCheckGuard('guard_tree').stdout,
