@@ -13,8 +13,7 @@ convert to #pragma once.
 Alas, though #pragma once is available on all the most commonly used
 compilers, it's not available on _every_ compiler. Perhaps one day you'll add
 support for a platform with a barebones compiler with no support for #pragma
-once and you'll have to convert back. That's ok. That's why you might have to
-convert to include guards.
+once and you'll have to convert back. That's ok. It's easy!
 
 ## What exactly is guardonce?
 There are three main tools provided by guardonce:
