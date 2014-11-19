@@ -14,7 +14,7 @@ from StringIO import StringIO
 Output = namedtuple('Output', ['stdout', 'stderr'])
 
 def setupDangerZone(inputPath):
-	# http://youtu.be/k3-zaTr6OUo
+	# http://youtu.be/siwpn14IE7E
 	if os.path.isdir(inputPath):
 		output = os.path.join('danger_zone', inputPath)
 		shutil.rmtree(output, True)
