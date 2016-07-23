@@ -104,7 +104,7 @@ class TestCheckGuard(unittest.TestCase):
 
 	def test_exclusion_no_match(self):
 		self.assertEqual(runCheckGuard(np('guard_tree'), np('*/some_other_name.h')).stdout,
-		'guard_tree/mismatched_name.h\n')
+		np('guard_tree/mismatched_name.h\n'))
 
 	def test_standard_guard_file_with_recursive_search(self):
 		self.assertEqual(runCheckGuardWithArgstring(np('-r guard_tree/BasicHeader.h')).stdout,
