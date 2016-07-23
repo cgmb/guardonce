@@ -34,6 +34,9 @@ install:
   # about it being out of date.
   - "pip install --disable-pip-version-check --user --upgrade pip"
 
+  # Install nosetests
+  - "pip install nose"
+
   # Install the project
   #- "pip install -e ."
 
