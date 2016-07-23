@@ -19,8 +19,15 @@ def lines_counts(textblock):
 			line_hash[line] = 1
 	return line_hash
 
+def np(path):
+	"""
+	np is a simple version of os.path.normpath, but for strings that are not
+	guaranteed to just be a single path. Does not collapse empty path sections.
+	"""
+	return path.replace('/', os.sep)
+
 def setupFileInDangerZone(fileName, permissions):
-	output = os.path.join('danger_zone/default/')
+	output = np('danger_zone/default/')
 	shutil.rmtree(output, True)
 	os.makedirs(output)
 	outputFileName = os.path.join(output, os.path.basename(fileName))
@@ -61,58 +68,58 @@ class TestCheckGuard(unittest.TestCase):
 		sys.stderr = self.saved_err
 
 	def test_standard_guard_file(self):
-		self.assertEqual(runCheckGuardOnFile('guard_tree/BasicHeader.h').stdout,
+		self.assertEqual(runCheckGuardOnFile(np('guard_tree/BasicHeader.h')).stdout,
 		'')
 
 	def test_mismatched_guard_file(self):
-		self.assertEqual(runCheckGuardOnFile('guard_tree/mismatched_name.h').stdout,
-		'guard_tree/mismatched_name.h\n')
+		self.assertEqual(runCheckGuardOnFile(np('guard_tree/mismatched_name.h')).stdout,
+		np('guard_tree/mismatched_name.h\n'))
 
 	def test_non_header_file(self):
-		self.assertEqual(runCheckGuardOnFile('guard_tree/non_header_file.txt').stdout,
-		'guard_tree/non_header_file.txt\n')
+		self.assertEqual(runCheckGuardOnFile(np('guard_tree/non_header_file.txt')).stdout,
+		np('guard_tree/non_header_file.txt\n'))
 
 	def test_multiple_header_files(self):
 		self.assertEqual(lines_counts(
-			runCheckGuardWithArgstring('guard_tree/BasicHeader.h '
-			'guard_tree/non_header_file.txt guard_tree/mismatched_name.h').stdout),
-		lines_counts(
+			runCheckGuardWithArgstring(np('guard_tree/BasicHeader.h '
+			'guard_tree/non_header_file.txt guard_tree/mismatched_name.h')).stdout),
+		lines_counts(np(
 			'guard_tree/non_header_file.txt\n'
-			'guard_tree/mismatched_name.h\n'))
+			'guard_tree/mismatched_name.h\n')))
 
 	def test_once_tree(self):
-		self.assertEqual(lines_counts(runCheckGuard('once_tree').stdout),
-		lines_counts(
+		self.assertEqual(lines_counts(runCheckGuard(np('once_tree')).stdout),
+		lines_counts(np(
 			'once_tree/mismatched_name.h\n'
 			'once_tree/BasicHeader.hpp\n'
-			'once_tree/BasicHeader.h\n'))
+			'once_tree/BasicHeader.h\n')))
 
 	def test_guard_tree(self):
-		self.assertEqual(runCheckGuard('guard_tree').stdout,
-		'guard_tree/mismatched_name.h\n')
+		self.assertEqual(runCheckGuard(np('guard_tree')).stdout,
+		np('guard_tree/mismatched_name.h\n'))
 
 	def test_exclusion_match(self):
-		self.assertEqual(runCheckGuard('guard_tree', '*/mismatched_name.h').stdout,
+		self.assertEqual(runCheckGuard(np('guard_tree'), np('*/mismatched_name.h')).stdout,
 		'')
 
 	def test_exclusion_no_match(self):
-		self.assertEqual(runCheckGuard('guard_tree', '*/some_other_name.h').stdout,
+		self.assertEqual(runCheckGuard(np('guard_tree'), np('*/some_other_name.h')).stdout,
 		'guard_tree/mismatched_name.h\n')
 
 	def test_standard_guard_file_with_recursive_search(self):
-		self.assertEqual(runCheckGuardWithArgstring('-r guard_tree/BasicHeader.h').stdout,
+		self.assertEqual(runCheckGuardWithArgstring(np('-r guard_tree/BasicHeader.h')).stdout,
 		'')
 		
 	def test_mismatched_guard_file_with_recursive_search(self):
-		self.assertEqual(runCheckGuardWithArgstring('-r guard_tree/mismatched_name.h').stdout,
-		'guard_tree/mismatched_name.h\n')
+		self.assertEqual(runCheckGuardWithArgstring(np('-r guard_tree/mismatched_name.h')).stdout,
+		np('guard_tree/mismatched_name.h\n'))
 
 	def test_error_on_passing_directory_as_file(self):
-		self.assertEqual(runCheckGuardWithArgstring('guard_tree').stderr,
-		"'guard_tree' is a directory. Search it for headers with -r\n")
+		self.assertEqual(runCheckGuardWithArgstring(np('guard_tree')).stderr,
+		np("'guard_tree' is a directory. Search it for headers with -r\n"))
 
 	def test_read_only_mismatched_guard_file(self):
-		fileName = setupFileInDangerZone('guard_tree/mismatched_name.h', 0444)
+		fileName = setupFileInDangerZone(np('guard_tree/mismatched_name.h'), 0444)
 		self.assertEqual(runCheckGuardOnFile(fileName).stdout,
 			fileName + '\n')
 
