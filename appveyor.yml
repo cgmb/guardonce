@@ -37,5 +37,7 @@ install:
   # Install the project
   #- "pip install -e ."
 
+build: off
+
 test_script:
   - "nosetests"
