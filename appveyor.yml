@@ -1,5 +1,7 @@
 # This file is published under the CC0 1.0 Universal License
 
+version: '{build}'
+
 environment:
   matrix:
     # https://www.appveyor.com/docs/installed-software#python
