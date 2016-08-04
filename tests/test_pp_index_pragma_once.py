@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright (C) 2016 Cordell Bloor
 # Published under the MIT License
 
