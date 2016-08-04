@@ -127,4 +127,6 @@ def indexPragmaOnce(src):
                     directive_end = last_normal_index_on_line
                     break
         i += 1
+    if directive_start < 0 or directive_end < 0:
+        raise ValueError('pragma once not found')
     return directive_start, directive_end

@@ -59,6 +59,19 @@ def test_no_once():
     go.indexPragmaOnce(contents)
 
 @raises(ValueError)
+def test_pragma_once_in_line_comment():
+    contents= '''
+// #pragma once
+'''
+    go.indexPragmaOnce(contents)
+
+@raises(ValueError)
+def test_pragma_once_in_multiline_comment():
+    contents= '''
+/* #pragma once */
+'''
+    go.indexPragmaOnce(contents)
+
 def test_extra_token_after_once():
     contents= '''
 #pragma once aklsjdf
