@@ -162,7 +162,7 @@ def main(arglist=None):
                 printError('"%s" is a directory' % f)
                 sys.exit(1)
         else:
-            processFile3(os.abspath(fileName), fileName)
+            processFile3(os.abspath(f), f)
 
 if __name__ == '__main__':
     main()

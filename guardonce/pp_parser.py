@@ -92,7 +92,7 @@ def indexPragmaOnce(src):
                 else:
                     raise ValueError('token outside of directive')
             elif c == '\n':
-                if not directive in [
+                if directive not in [
                         DirectiveState.Empty,
                         DirectiveState.Done ]:
                     raise ValueError('unfinished directive')
