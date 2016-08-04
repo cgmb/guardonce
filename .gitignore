@@ -1,5 +1,18 @@
-*.sublime-project
-*.sublime-workspace
-*.pyc
-*.pyo
+# python files
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+/build/
+/dist/
+/re
+/sys
+
+# test folders
 danger_zone/
+
+# virtual environment
+/venv/
+
+# editor files
+*.swp
