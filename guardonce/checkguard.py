@@ -98,7 +98,7 @@ def processFile2(filePath, fileName):
     ctx = Context()
     ctx.filePath = filePath
     ctx.fileName = fileName
-    
+
     class Options:
         pass
     options = Options()
@@ -146,7 +146,7 @@ def main(arglist=None):
             action='store_true',
             dest='recursive',
             help='recursively search directories for headers')
-    parser.add_argument('-e','--exclude', 
+    parser.add_argument('-e','--exclude',
             action='append',
             dest='exclusions',
             metavar='pattern',
