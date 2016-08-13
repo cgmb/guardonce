@@ -72,6 +72,21 @@ def test_pragma_once_in_multiline_comment():
 '''
     go.indexPragmaOnce(contents)
 
+@raises(ValueError)
+def test_pragma_once_in_string():
+    contents= '''
+char* string = "#pragma once";
+'''
+    go.indexPragmaOnce(contents)
+
+@raises(ValueError)
+def test_junk_before_pragma_once():
+    contents= '''
+notvalid #pragma once
+'''
+    go.indexPragmaOnce(contents)
+
+@raises(ValueError)
 def test_extra_token_after_once():
     contents= '''
 #pragma once aklsjdf
@@ -202,6 +217,32 @@ inline int getRandomNumber()
     s,e = go.indexPragmaOnce(contents)
     assert_equals(s, 0)
     assert_equals(e, 12)
+
+def test_file_content_before_once():
+    contents= '''
+// https://xkcd.com/221/
+inline int getRandomNumber()
+{
+  return 4; // chosen by fair dice roll.
+            // guaranteed to be random
+}
+
+#pragma once
+'''
+    s,e = go.indexPragmaOnce(contents)
+    assert_equals(s, 140)
+    assert_equals(e, 152)
+
+def test_pragma_once_after_other_directives():
+    contents= '''
+/*if pragma once support then use it in addition to include guard*/
+#if defined(_pragma_once_support)
+#    pragma once
+#endif
+'''
+    s,e = go.indexPragmaOnce(contents)
+    assert_equals(s, 103)
+    assert_equals(e, 119)
 
 def test_multiline_comment_before_hash():
     contents= '''/*
