@@ -14,6 +14,20 @@ from functools import partial
 
 __version__ = "1.0.0"
 
+def guessGuard(contents):
+    """
+    Returns the guard, as well as the start and end indexes of the include
+    guard from the start of the file, or throws ValueError if not found.
+    Comments are not supported.
+    """
+    regex = re.compile(r"^[ \t]*\#[ \t]*ifndef[ \t]+([\w]+)"
+        + r"[ \t]*\n[ \t]*\#[ \t]*define[ \t]+\1[ \t]*$",
+        re.MULTILINE)
+    match = regex.search(contents)
+    if not match:
+        raise ValueError('guard start not found')
+    return (match.group(1),) + match.span()
+
 def indexPragmaOnce(contents):
     """
     Returns the start and end indexes of the pragma once directive from
@@ -54,7 +68,11 @@ def indexGuardEnd(contents):
 
 def isProtectedByGuard(contents, guardSymbol):
     try:
-        indexGuardStart(contents, guardSymbol)
+        if guardSymbol:
+            indexGuardStart(contents, guardSymbol)
+        else:
+            guessGuard(contents)
+
         indexGuardEnd(contents)
         return True
     except ValueError:
@@ -79,12 +97,6 @@ def getFileContents(fileName):
     with open(fileName, 'r') as f:
         return f.read()
 
-def fileNameGuardSymbol(ctx):
-    return ctx.fileName.upper().replace('.', '_')
-
-def filePathGuardSymbol(ctx):
-    return ctx.filePath.upper().replace('.', '_').replace('/','_')
-
 def processFile(filePath, guardSymbol, options):
     try:
         if not isFileProtected(filePath, guardSymbol, options):
@@ -105,7 +117,7 @@ def processFile2(filePath, fileName):
     options.guardOk = True
     options.onceOk = True
 
-    return processFile(filePath, fileNameGuardSymbol(ctx), options)
+    return processFile(filePath, None, options)
 
 def processFile3(fileName):
     processFile2(os.path.abspath(fileName), fileName)
