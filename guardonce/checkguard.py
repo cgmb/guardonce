@@ -168,13 +168,18 @@ def main():
             metavar='pattern',
             default=[],
             help='exclude files that match the given pattern')
+    parser.add_argument('-o','--only',
+            dest='types',
+            metavar='types',
+            default='any',
+            help='only accept specified types of include proction')
     args = parser.parse_args()
 
     class Options:
         pass
     options = Options()
-    options.guardOk = True
-    options.onceOk = True
+    options.guardOk = args.types in ['g', 'guard', 'any']
+    options.onceOk = args.types in ['o', 'once', 'any']
     options.createGuard = processGuardPattern(args.pattern)
 
     for f in args.files:
