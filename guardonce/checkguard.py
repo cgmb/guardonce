@@ -11,6 +11,7 @@ import os
 import re
 from fnmatch import fnmatch
 from functools import partial
+from pattern_compiler import compilePattern, ParserError
 
 __version__ = "1.0.0"
 
@@ -85,42 +86,32 @@ def isProtectedByPragmaOnce(contents):
     except ValueError:
         return False
 
-def isProtected(contents, guardSymbol, options):
-    return (options.guardOk and isProtectedByGuard(contents, guardSymbol)
+def isProtected(contents, options):
+    return (options.guardOk and isProtectedByGuard(contents, options.guard)
         or options.onceOk and isProtectedByPragmaOnce(contents))
 
-def isFileProtected(fileName, guardSymbol, options):
+def isFileProtected(fileName, options):
     contents = getFileContents(fileName)
-    return isProtected(contents, guardSymbol, options)
+    return isProtected(contents, options)
 
 def getFileContents(fileName):
     with open(fileName, 'r') as f:
         return f.read()
 
-def processFile(filePath, guardSymbol, options):
-    try:
-        if not isFileProtected(filePath, guardSymbol, options):
-            print(filePath)
-    except Exception as e:
-        print(e, file=sys.stderr)
-
-def processFile2(filePath, fileName):
+def processFile(filePath, fileName, options):
     class Context:
         pass
     ctx = Context()
     ctx.filePath = filePath
     ctx.fileName = fileName
 
-    class Options:
-        pass
-    options = Options()
-    options.guardOk = True
-    options.onceOk = True
+    options.guard = options.createGuard(ctx)
 
-    return processFile(filePath, None, options)
-
-def processFile3(fileName):
-    processFile2(os.path.abspath(fileName), fileName)
+    try:
+        if not isFileProtected(filePath, options):
+            print(filePath)
+    except Exception as e:
+        print(e, file=sys.stderr)
 
 def printError(error):
     print(error, file=sys.stderr)
@@ -140,6 +131,16 @@ def applyToHeaders(func, directory, exclusions):
             if isHeaderFile(fileName) and not isExcluded(filePath, exclusions):
                 func(filePath, fileName)
 
+def processGuardPattern(guardPattern):
+    createGuard = lambda ctx: None
+    if guardPattern is not None:
+        try:
+            createGuard = compilePattern(guardPattern)
+        except ParserError as e:
+            printError(e)
+            sys.exit(1)
+    return createGuard
+
 def main(arglist=None):
     parser = argparse.ArgumentParser(
             description='Find C or C++ header files with incorrect or missing '
@@ -154,6 +155,11 @@ def main(arglist=None):
     parser.add_argument('-v','--verbose',
             action='store_true',
             help='display more information about actions being taken')
+    parser.add_argument('-p','--guard-pattern',
+            dest='guardPattern',
+            metavar='pattern',
+            default=None,
+            help='transform the file information into a guard')
     parser.add_argument('-r','--recursive',
             action='store_true',
             dest='recursive',
@@ -166,15 +172,20 @@ def main(arglist=None):
             help='exclude files that match the given pattern')
     args = parser.parse_args(arglist)
 
+    class Options:
+        pass
+    options = Options()
+    options.guardOk = True
+    options.onceOk = True
+    options.createGuard = processGuardPattern(args.guardPattern)
+
     for f in args.files:
         if os.path.isdir(f):
             if args.recursive:
-                applyToHeaders(processFile2, f, args.exclusions)
+                process = partial(processFile, options=options)
+                applyToHeaders(process, f, args.exclusions)
             else:
                 printError('"%s" is a directory' % f)
                 sys.exit(1)
         else:
-            processFile3(os.abspath(f), f)
-
-if __name__ == '__main__':
-    main()
+            processFile(f, os.path.basename(f), options)
