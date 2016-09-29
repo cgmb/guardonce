@@ -141,7 +141,7 @@ def processGuardPattern(guardPattern):
             sys.exit(1)
     return createGuard
 
-def main(arglist=None):
+def main():
     parser = argparse.ArgumentParser(
             description='Find C or C++ header files with incorrect or missing '
             'include guards.')
@@ -155,29 +155,27 @@ def main(arglist=None):
     parser.add_argument('-v','--verbose',
             action='store_true',
             help='display more information about actions being taken')
-    parser.add_argument('-p','--guard-pattern',
-            dest='guardPattern',
-            metavar='pattern',
-            default=None,
-            help='transform the file information into a guard')
     parser.add_argument('-r','--recursive',
             action='store_true',
             dest='recursive',
             help='recursively search directories for headers')
+    parser.add_argument('-p','--pattern',
+            default=None,
+            help='check that include guards must match the specified pattern')
     parser.add_argument('-e','--exclude',
             action='append',
             dest='exclusions',
             metavar='pattern',
             default=[],
             help='exclude files that match the given pattern')
-    args = parser.parse_args(arglist)
+    args = parser.parse_args()
 
     class Options:
         pass
     options = Options()
     options.guardOk = True
     options.onceOk = True
-    options.createGuard = processGuardPattern(args.guardPattern)
+    options.createGuard = processGuardPattern(args.pattern)
 
     for f in args.files:
         if os.path.isdir(f):
