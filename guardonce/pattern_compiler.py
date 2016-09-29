@@ -51,8 +51,16 @@ def compilePattern(pattern):
     funcs = []
     expected_arg = None
     args = []
+    function = None
     for token in tokenize(pattern):
         if not expected_arg:
+            if not function:
+                function = token
+            elif token == '|':
+                function = None
+            else:
+                raise ParserError('Unexpected argument "%s" in pattern' % token)
+
             if token == 'name':
                 funcs.append(lambda ctx, s: ctx.fileName)
             elif token == 'upper':
@@ -70,7 +78,7 @@ def compilePattern(pattern):
             elif token != '|':
                 raise ParserError('Unknown function "%s" in pattern' % token)
         elif token == '|':
-            raise ParserError('Function in pattern missing argument') # todo: improve error message
+            raise ParserError('Missing argument from "%s" in pattern' % function)
         elif expected_arg == Args.Replace:
             expected_arg = Args.ReplaceWith
             args.append(token)
@@ -89,7 +97,7 @@ def compilePattern(pattern):
             expected_arg = None
 
     if expected_arg:
-        raise ParserError('Function in pattern missing argument') # todo: improve error message
+        raise ParserError('Missing argument from "%s" in pattern' % function)
 
     def process(ctx):
         s = ''
