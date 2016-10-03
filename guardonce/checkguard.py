@@ -161,7 +161,8 @@ def main():
             help='recursively search directories for headers')
     parser.add_argument('-p','--pattern',
             default=None,
-            help='check that include guards must match the specified pattern')
+            metavar='pattern',
+            help='check that include guards match the specified pattern')
     parser.add_argument('-e','--exclude',
             action='append',
             dest='exclusions',
@@ -169,10 +170,11 @@ def main():
             default=[],
             help='exclude files that match the given pattern')
     parser.add_argument('-o','--only',
-            dest='types',
-            metavar='types',
+            dest='type',
+            metavar='type',
             default='any',
-            help='only accept specified types of include proction')
+            choices=['guard','once','g','o'],
+            help='only accept the specified type of include protection')
     args = parser.parse_args()
 
     class Options:
