@@ -11,7 +11,7 @@ import os
 import re
 from fnmatch import fnmatch
 from functools import partial
-from pattern_compiler import compilePattern, ParserError
+from guardonce.pattern_compiler import compilePattern, ParserError
 
 __version__ = "1.0.0"
 
