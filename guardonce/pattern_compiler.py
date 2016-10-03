@@ -52,6 +52,7 @@ def compilePattern(pattern):
     expected_arg = None
     args = []
     function = None
+    raw = False
     for token in tokenize(pattern):
         if not expected_arg:
             if not function:
@@ -75,6 +76,8 @@ def compilePattern(pattern):
                 expected_arg = Args.PrependWith
             elif token == 'surround':
                 expected_arg = Args.SurroundWith
+            elif token == 'raw':
+                raw = True
             elif token != '|':
                 raise ParserError('Unknown function "%s" in pattern' % token)
         elif token == '|':
@@ -103,5 +106,5 @@ def compilePattern(pattern):
         s = ''
         for fn in funcs:
             s = fn(ctx, s)
-        return s.replace('.','_')
+        return s if raw else s.replace('.','_')
     return process
