@@ -180,8 +180,8 @@ def main():
     class Options:
         pass
     options = Options()
-    options.guardOk = args.types in ['g', 'guard', 'any']
-    options.onceOk = args.types in ['o', 'once', 'any']
+    options.guardOk = args.type in ['g', 'guard', 'any']
+    options.onceOk = args.type in ['o', 'once', 'any']
     options.createGuard = processGuardPattern(args.pattern)
 
     for f in args.files:
