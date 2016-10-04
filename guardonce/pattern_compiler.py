@@ -42,6 +42,19 @@ def tokenize(pattern):
         start = end
     return tokens
 
+def snake(s):
+    snek = []
+    prev_up = False
+    for idx, c in enumerate(s):
+        up = c.isupper()
+        next_up = s[idx+1].isupper() if idx+1 < len(s) else False
+        if (up and not prev_up and idx != 0 or
+            up and prev_up and not next_up and idx != len(s)):
+            snek.append('_')
+        snek.append(c.lower())
+        prev_up = up
+    return ''.join(snek)
+
 def sanitize(s):
     return re.sub(r"\W", '_', s)
 
@@ -75,6 +88,8 @@ def compilePattern(pattern):
                 funcs.append(lambda ctx, s: s.upper())
             elif token == 'lower':
                 funcs.append(lambda ctx, s: s.lower())
+            elif token == 'snake':
+                funcs.append(lambda ctx, s: snake(s))
             elif token == 'replace':
                 expected_arg = Args.Replace
             elif token == 'append':

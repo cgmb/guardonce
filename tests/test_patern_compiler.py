@@ -36,6 +36,20 @@ def test_lower():
     ctx.fileName = 'Match.h'
     assert_equals(createGuard(ctx), 'match_h')
 
+def test_snake():
+    pattern = 'name | snake'
+    createGuard = compilePattern(pattern)
+    ctx = Context()
+    ctx.fileName = 'MatchFactory.h'
+    assert_equals(createGuard(ctx), 'match_factory_h')
+
+def test_snake_acronym():
+    pattern = 'name | snake'
+    createGuard = compilePattern(pattern)
+    ctx = Context()
+    ctx.fileName = 'MatchHTTPFactory.h'
+    assert_equals(createGuard(ctx), 'match_http_factory_h')
+
 def test_prepend():
     pattern = 'name | prepend __'
     createGuard = compilePattern(pattern)
