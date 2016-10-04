@@ -4,6 +4,8 @@
 
 """Create functions that generate include guard tokens from patterns."""
 
+import re
+
 class ParseState:
     Normal, Token, Complete = range(3)
 
@@ -40,6 +42,9 @@ def tokenize(pattern):
         start = end
     return tokens
 
+def sanitize(s):
+    return re.sub(r"\W", '_', s)
+
 class Args:
     Replace, ReplaceWith, AppendWith, PrependWith, SurroundWith = range(1,6)
 
@@ -64,6 +69,8 @@ def compilePattern(pattern):
 
             if token == 'name':
                 funcs.append(lambda ctx, s: ctx.fileName)
+            elif token == 'path':
+                funcs.append(lambda ctx, s: ctx.filePath)
             elif token == 'upper':
                 funcs.append(lambda ctx, s: s.upper())
             elif token == 'lower':
@@ -106,5 +113,5 @@ def compilePattern(pattern):
         s = ''
         for fn in funcs:
             s = fn(ctx, s)
-        return s if raw else s.replace('.','_')
+        return s if raw else sanitize(s)
     return process

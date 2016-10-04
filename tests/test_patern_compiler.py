@@ -15,6 +15,13 @@ def test_name():
     ctx.fileName = 'Match.h'
     assert_equals(createGuard(ctx), 'Match_h')
 
+def test_path():
+    pattern = 'path'
+    createGuard = compilePattern(pattern)
+    ctx = Context()
+    ctx.filePath = 'src/Match.h'
+    assert_equals(createGuard(ctx), 'src_Match_h')
+
 def test_upper():
     pattern = 'name | upper'
     createGuard = compilePattern(pattern)
