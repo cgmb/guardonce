@@ -24,3 +24,22 @@ int main() {
 '''
     o = o2g.replacePragmaOnce(_input, 'MATCH_H')
     assert_multi_line_equal(o, expected)
+
+def test_no_newline_at_eof():
+    _input = '''
+#pragma once
+
+int main() {
+  return 0;
+}'''
+    expected = '''
+#ifndef MATCH_H
+#define MATCH_H
+
+int main() {
+  return 0;
+}
+#endif
+'''
+    o = o2g.replacePragmaOnce(_input, 'MATCH_H')
+    assert_multi_line_equal(o, expected)

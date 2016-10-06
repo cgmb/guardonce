@@ -58,3 +58,16 @@ def test_comment():
     s,e = go.indexGuardEnd(contents)
     assert_equals(s, 1)
     assert_equals(e, 21)
+
+def test_matches_last_endif():
+    contents = '''
+#ifndef MATCH_H
+#define MATCH_H
+#ifdef WIN32
+#error Psalm 24:4
+#endif /* WIN32 */
+#endif /* MATCH_H */
+'''
+    s,e = go.indexGuardEnd(contents)
+    assert_equals(s, 83)
+    assert_equals(e, 103)

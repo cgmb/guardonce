@@ -21,8 +21,11 @@ def replacePragmaOnce(contents, guard):
     guardClose = '#endif\n'
     try:
         start, end = indexPragmaOnce(contents)
-        result = contents[:start] + guardOpen + contents[end:] + guardClose
-        return result
+        nl = '' if contents.endswith('\n') else '\n'
+        return (contents[:start]
+            + guardOpen
+            + contents[end:]
+            + nl + guardClose)
     except ValueError:
         return None
 

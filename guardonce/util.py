@@ -58,7 +58,9 @@ def indexGuardEnd(contents):
     """
     regex = re.compile(r"^[ \t]*\#[ \t]*endif([ \t]+.*|[ \t]*)$",
         re.MULTILINE)
-    match = regex.search(contents)
+    match = None
+    for match in regex.finditer(contents):
+        pass
     if not match:
         raise ValueError('guard end not found')
     return match.span()
