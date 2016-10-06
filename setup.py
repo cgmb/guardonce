@@ -14,6 +14,8 @@ setup(
     entry_points = {
         'console_scripts': [
             'checkguard = guardonce.checkguard:main',
+            'guard2once = guardonce.guard2once:main',
+            'once2guard = guardonce.once2guard:main',
         ]
     },
     extras_require = { 'test': ['nose'] },

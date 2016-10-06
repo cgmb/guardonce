@@ -2,7 +2,7 @@
 # Copyright (C) 2016 Cordell Bloor
 # Published under the MIT License
 
-"""Find C or C++ header files with incorrect or missing include guards."""
+"""Replace C and C++ include guards with #pragma once."""
 
 from __future__ import print_function
 import argparse
@@ -12,36 +12,21 @@ import re
 from fnmatch import fnmatch
 from functools import partial
 from .pattern_compiler import compilePattern, ParserError
-from .util import guessGuard, indexGuardStart, indexGuardEnd, getFileContents, applyToHeaders, printError
+from .util import guessGuard, indexGuardStart, indexGuardEnd, getFileContents, writeFileContents, applyToHeaders, printError
 
 __version__ = "1.0.0"
 
-def isProtectedByGuard(contents, guardSymbol):
+def replaceGuard(contents, guard):
     try:
-        if guardSymbol:
-            indexGuardStart(contents, guardSymbol)
+        if guard:
+            start1, end1 = indexGuardStart(contents, guard)
         else:
-            guessGuard(contents)
-
-        indexGuardEnd(contents)
-        return True
+            guard, start1, end1 = guessGuard(contents)
+        start2, end2 = indexGuardEnd(contents)
+        return (contents[:start1] + '#pragma once' +
+                contents[end1:start2] + contents[end2:])
     except ValueError:
-        return False
-
-def isProtectedByPragmaOnce(contents):
-    try:
-        indexPragmaOnce(contents)
-        return True
-    except ValueError:
-        return False
-
-def isProtected(contents, options):
-    return (options.guardOk and isProtectedByGuard(contents, options.guard)
-        or options.onceOk and isProtectedByPragmaOnce(contents))
-
-def isFileProtected(fileName, options):
-    contents = getFileContents(fileName)
-    return isProtected(contents, options)
+        return None
 
 def processFile(filePath, fileName, options):
     class Context:
@@ -53,8 +38,10 @@ def processFile(filePath, fileName, options):
     options.guard = options.createGuard(ctx)
 
     try:
-        if not isFileProtected(filePath, options):
-            print(filePath)
+        contents = getFileContents(filePath)
+        newContents = replaceGuard(contents, options.guard)
+        if newContents:
+            writeFileContents(filePath, newContents)
     except Exception as e:
         print(e, file=sys.stderr)
 
@@ -70,8 +57,7 @@ def processGuardPattern(guardPattern):
 
 def main():
     parser = argparse.ArgumentParser(
-            description='Find C or C++ header files with incorrect or missing '
-            'include guards.')
+            description='Replace C and C++ include guards with #pragma once.')
     parser.add_argument('files',
             metavar='file',
             nargs='+',
@@ -89,26 +75,18 @@ def main():
     parser.add_argument('-p','--pattern',
             default=None,
             metavar='pattern',
-            help='check that include guards match the specified pattern')
+            help='search for include guards based on the specified pattern')
     parser.add_argument('-e','--exclude',
             action='append',
             dest='exclusions',
             metavar='pattern',
             default=[],
             help='exclude files that match the given pattern')
-    parser.add_argument('-o','--only',
-            dest='type',
-            metavar='type',
-            default='any',
-            choices=['guard','once','g','o'],
-            help='only accept the specified type of include protection')
     args = parser.parse_args()
 
     class Options:
         pass
     options = Options()
-    options.guardOk = args.type in ['g', 'guard', 'any']
-    options.onceOk = args.type in ['o', 'once', 'any']
     options.createGuard = processGuardPattern(args.pattern)
 
     for f in args.files:

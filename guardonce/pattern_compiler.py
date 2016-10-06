@@ -43,6 +43,9 @@ def tokenize(pattern):
     return tokens
 
 def snake(s):
+    """
+    Converts an input string in PascalCase to snake_case.
+    """
     snek = []
     prev_up = False
     for idx, c in enumerate(s):
@@ -56,6 +59,10 @@ def snake(s):
     return ''.join(snek)
 
 def sanitize(s):
+    """
+    Removes characters that are not allowed in macro names. Anything
+    that's not alphanumeric is replaced with underscore.
+    """
     return re.sub(r"\W", '_', s)
 
 class Args:

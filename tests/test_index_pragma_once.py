@@ -3,7 +3,7 @@
 # Published under the MIT License
 
 from nose.tools import *
-import guardonce.checkguard as go
+import guardonce.util as go
 
 def test_ok():
     contents = '''
