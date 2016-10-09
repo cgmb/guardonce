@@ -12,7 +12,7 @@ class ParseState:
 class ParserError(Exception):
     pass
 
-def nextToken(pattern, startIndex):
+def next_token(pattern, startIndex):
     """
     Given a pattern string and a startIndex, returns the end index of the next
     token, including whitespace on either side.
@@ -37,7 +37,7 @@ def tokenize(pattern):
     start = 0
     end = 0
     while end != len(pattern):
-        end = nextToken(pattern, start)
+        end = next_token(pattern, start)
         tokens.append(pattern[start:end].strip())
         start = end
     return tokens
@@ -68,15 +68,15 @@ def sanitize(s):
 class Args:
     Replace, ReplaceWith, AppendWith, PrependWith, SurroundWith = range(1,6)
 
-def compilePattern(pattern):
+def compile_pattern(pattern):
     """
     Takes a pattern specification as a string, and returns a function that
     turns a file context into an include guard.
     """
-    funcs = []
+    chain = []
+    function = None
     expected_arg = None
     args = []
-    function = None
     raw = False
     for token in tokenize(pattern):
         if not expected_arg:
@@ -88,15 +88,15 @@ def compilePattern(pattern):
                 raise ParserError('Unexpected argument "%s" in pattern' % token)
 
             if token == 'name':
-                funcs.append(lambda ctx, s: ctx.fileName)
+                chain.append(lambda ctx, s: ctx.filename)
             elif token == 'path':
-                funcs.append(lambda ctx, s: ctx.filePath)
+                chain.append(lambda ctx, s: ctx.filepath)
             elif token == 'upper':
-                funcs.append(lambda ctx, s: s.upper())
+                chain.append(lambda ctx, s: s.upper())
             elif token == 'lower':
-                funcs.append(lambda ctx, s: s.lower())
+                chain.append(lambda ctx, s: s.lower())
             elif token == 'snake':
-                funcs.append(lambda ctx, s: snake(s))
+                chain.append(lambda ctx, s: snake(s))
             elif token == 'replace':
                 expected_arg = Args.Replace
             elif token == 'append':
@@ -115,17 +115,17 @@ def compilePattern(pattern):
             expected_arg = Args.ReplaceWith
             args.append(token)
         elif expected_arg == Args.ReplaceWith:
-            funcs.append(lambda ctx, s, f=args[0], t=token: s.replace(f, t))
+            chain.append(lambda ctx, s, f=args[0], t=token: s.replace(f, t))
             expected_arg = None
             args = []
         elif expected_arg == Args.AppendWith:
-            funcs.append(lambda ctx, s, suffix=token: s + suffix)
+            chain.append(lambda ctx, s, suffix=token: s + suffix)
             expected_arg = None
         elif expected_arg == Args.PrependWith:
-            funcs.append(lambda ctx, s, prefix=token: prefix + s)
+            chain.append(lambda ctx, s, prefix=token: prefix + s)
             expected_arg = None
         elif expected_arg == Args.SurroundWith:
-            funcs.append(lambda ctx, s, arg=token: arg + s + arg)
+            chain.append(lambda ctx, s, arg=token: arg + s + arg)
             expected_arg = None
 
     if expected_arg:
@@ -133,7 +133,7 @@ def compilePattern(pattern):
 
     def process(ctx):
         s = ''
-        for fn in funcs:
+        for fn in chain:
             s = fn(ctx, s)
         return s if raw else sanitize(s)
     return process

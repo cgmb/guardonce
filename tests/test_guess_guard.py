@@ -10,7 +10,7 @@ def test_ok():
 #ifndef MATCH_H
 #define MATCH_H
 '''
-    g,s,e = go.guessGuard(contents)
+    g,s,e = go.guess_guard(contents)
     assert_equals(g, 'MATCH_H')
     assert_equals(s, 1)
     assert_equals(e, 32)
@@ -20,7 +20,7 @@ def test_ok_space_before_hash():
  #ifndef MATCH_H
 #define MATCH_H
 '''
-    g,s,e = go.guessGuard(contents)
+    g,s,e = go.guess_guard(contents)
     assert_equals(g, 'MATCH_H')
     assert_equals(s, 1)
     assert_equals(e, 33)
@@ -30,7 +30,7 @@ def test_ok_space_after_hash():
 # ifndef MATCH_H
 # define MATCH_H
 '''
-    g,s,e = go.guessGuard(contents)
+    g,s,e = go.guess_guard(contents)
     assert_equals(g, 'MATCH_H')
     assert_equals(s, 1)
     assert_equals(e, 34)
@@ -41,7 +41,7 @@ def test_no_ifndef():
 #ifdef MATCH_H
 #define MATCH_H
 '''
-    go.guessGuard(contents)
+    go.guess_guard(contents)
 
 @raises(ValueError)
 def test_no_define():
@@ -49,7 +49,7 @@ def test_no_define():
 #ifndef MATCH_H
 #defne MATCH_H
 '''
-    go.guessGuard(contents)
+    go.guess_guard(contents)
 
 @raises(ValueError)
 def test_mismatched_define_symbol():
@@ -57,7 +57,7 @@ def test_mismatched_define_symbol():
 #ifndef MATCH_H
 #define MISMATCH_H
 '''
-    go.guessGuard(contents)
+    go.guess_guard(contents)
 
 @raises(ValueError)
 def test_extra_junk_on_ifndef():
@@ -65,7 +65,7 @@ def test_extra_junk_on_ifndef():
 #ifndef MATCH_H WEIRD_HUH
 #define MATCH_H
 '''
-    go.guessGuard(contents)
+    go.guess_guard(contents)
 
 @raises(ValueError)
 def test_extra_junk_on_define():
@@ -73,14 +73,14 @@ def test_extra_junk_on_define():
 #ifndef MATCH_H
 #define MATCH_H WEIRD_HUH
 '''
-    go.guessGuard(contents)
+    go.guess_guard(contents)
 
 def test_extra_whitespace_on_ifndef():
     contents = '''
 #ifndef MATCH_H 
 #define MATCH_H
 '''
-    g,s,e = go.guessGuard(contents)
+    g,s,e = go.guess_guard(contents)
     assert_equals(g, 'MATCH_H')
     assert_equals(s, 1)
     assert_equals(e, 33)
@@ -90,7 +90,7 @@ def test_extra_whitespace_on_define():
 #ifndef MATCH_H
 #define MATCH_H 
 '''
-    g,s,e = go.guessGuard(contents)
+    g,s,e = go.guess_guard(contents)
     assert_equals(g, 'MATCH_H')
     assert_equals(s, 1)
     assert_equals(e, 33)

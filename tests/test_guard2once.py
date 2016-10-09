@@ -23,7 +23,7 @@ int main() {
 }
 
 '''
-    o = o2g.replaceGuard(_input, 'MATCH_H')
+    o = o2g.replace_guard(_input, 'MATCH_H')
     assert_multi_line_equal(o, expected)
 
 def test_no_newline_at_eof():
@@ -42,7 +42,7 @@ int main() {
   return 0;
 }
 '''
-    o = o2g.replaceGuard(_input, 'MATCH_H')
+    o = o2g.replace_guard(_input, 'MATCH_H')
     assert_multi_line_equal(o, expected)
 
 def test_unknown_guard():
@@ -63,7 +63,7 @@ int main() {
 }
 
 '''
-    o = o2g.replaceGuard(_input, None)
+    o = o2g.replace_guard(_input, None)
     assert_multi_line_equal(o, expected)
 
 def test_with_comment():
@@ -84,7 +84,7 @@ int main() {
 }
 
 '''
-    o = o2g.replaceGuard(_input, 'MATCH_H')
+    o = o2g.replace_guard(_input, 'MATCH_H')
     assert_multi_line_equal(o, expected)
 
 def test_with_comment_unknown_guard():
@@ -105,5 +105,5 @@ int main() {
 }
 
 '''
-    o = o2g.replaceGuard(_input, None)
+    o = o2g.replace_guard(_input, None)
     assert_multi_line_equal(o, expected)

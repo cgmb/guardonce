@@ -11,62 +11,63 @@ import os
 import re
 from fnmatch import fnmatch
 from functools import partial
-from .pattern_compiler import compilePattern, ParserError
-from .util import guessGuard, indexGuardStart, indexGuardEnd, getFileContents, applyToHeaders, printError
+from .pattern_compiler import compile_pattern, ParserError
+from .util import (guess_guard, index_guard_start, index_guard_end,
+    index_pragma_once, get_file_contents, apply_to_headers)
 
 __version__ = "1.0.0"
 
-def isProtectedByGuard(contents, guardSymbol):
+def is_protected_by_guard(contents, guard_symbol):
     try:
-        if guardSymbol:
-            indexGuardStart(contents, guardSymbol)
+        if guard_symbol:
+            index_guard_start(contents, guard_symbol)
         else:
-            guessGuard(contents)
+            guess_guard(contents)
 
-        indexGuardEnd(contents)
+        index_guard_end(contents)
         return True
     except ValueError:
         return False
 
-def isProtectedByPragmaOnce(contents):
+def is_protected_by_once(contents):
     try:
-        indexPragmaOnce(contents)
+        index_pragma_once(contents)
         return True
     except ValueError:
         return False
 
-def isProtected(contents, options):
-    return (options.guardOk and isProtectedByGuard(contents, options.guard)
-        or options.onceOk and isProtectedByPragmaOnce(contents))
+def is_protected(contents, options):
+    return (options.accept_guard and is_protected_by_guard(contents, options.guard)
+        or options.accept_once and is_protected_by_once(contents))
 
-def isFileProtected(fileName, options):
-    contents = getFileContents(fileName)
-    return isProtected(contents, options)
+def is_file_protected(filename, options):
+    contents = get_file_contents(filename)
+    return is_protected(contents, options)
 
-def processFile(filePath, fileName, options):
+def process_file(filepath, filename, options):
     class Context:
         pass
     ctx = Context()
-    ctx.filePath = filePath
-    ctx.fileName = fileName
+    ctx.filepath = filepath
+    ctx.filename = filename
 
-    options.guard = options.createGuard(ctx)
+    options.guard = options.create_guard(ctx)
 
     try:
-        if not isFileProtected(filePath, options):
-            print(filePath)
+        if not is_file_protected(filepath, options):
+            print(filepath)
     except Exception as e:
         print(e, file=sys.stderr)
 
-def processGuardPattern(guardPattern):
-    createGuard = lambda ctx: None
-    if guardPattern is not None:
+def process_pattern(guard_pattern):
+    create_guard = lambda ctx: None
+    if guard_pattern is not None:
         try:
-            createGuard = compilePattern(guardPattern)
+            create_guard = compile_pattern(guard_pattern)
         except ParserError as e:
-            printError(e)
+            print(e, file=sys.stderr)
             sys.exit(1)
-    return createGuard
+    return create_guard
 
 def main():
     parser = argparse.ArgumentParser(
@@ -107,17 +108,17 @@ def main():
     class Options:
         pass
     options = Options()
-    options.guardOk = args.type in ['g', 'guard', 'any']
-    options.onceOk = args.type in ['o', 'once', 'any']
-    options.createGuard = processGuardPattern(args.pattern)
+    options.accept_guard = args.type in ['g', 'guard', 'any']
+    options.accept_once = args.type in ['o', 'once', 'any']
+    options.create_guard = process_pattern(args.pattern)
 
     for f in args.files:
         if os.path.isdir(f):
             if args.recursive:
-                process = partial(processFile, options=options)
-                applyToHeaders(process, f, args.exclusions)
+                process = partial(process_file, options=options)
+                apply_to_headers(process, f, args.exclusions)
             else:
-                printError('"%s" is a directory' % f)
+                print('"%s" is a directory' % f, file=sys.stderr)
                 sys.exit(1)
         else:
-            processFile(f, os.path.basename(f), options)
+            process_file(f, os.path.basename(f), options)

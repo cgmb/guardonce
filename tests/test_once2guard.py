@@ -22,7 +22,7 @@ int main() {
 }
 #endif
 '''
-    o = o2g.replacePragmaOnce(_input, 'MATCH_H')
+    o = o2g.replace_pragma_once(_input, 'MATCH_H')
     assert_multi_line_equal(o, expected)
 
 def test_no_newline_at_eof():
@@ -41,5 +41,5 @@ int main() {
 }
 #endif
 '''
-    o = o2g.replacePragmaOnce(_input, 'MATCH_H')
+    o = o2g.replace_pragma_once(_input, 'MATCH_H')
     assert_multi_line_equal(o, expected)

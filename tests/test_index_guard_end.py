@@ -9,7 +9,7 @@ def test_ok():
     contents = '''
 #endif
 '''
-    s,e = go.indexGuardEnd(contents)
+    s,e = go.index_guard_end(contents)
     assert_equals(s, 1)
     assert_equals(e, 7)
 
@@ -17,7 +17,7 @@ def test_ok_space_before_hash():
     contents = '''
  #endif
 '''
-    s,e = go.indexGuardEnd(contents)
+    s,e = go.index_guard_end(contents)
     assert_equals(s, 1)
     assert_equals(e, 8)
 
@@ -25,7 +25,7 @@ def test_ok_space_after_hash():
     contents = '''
 # endif
 '''
-    s,e = go.indexGuardEnd(contents)
+    s,e = go.index_guard_end(contents)
     assert_equals(s, 1)
     assert_equals(e, 8)
 
@@ -33,14 +33,14 @@ def test_ok_space_endif():
     contents = '''
 #endif 
 '''
-    s,e = go.indexGuardEnd(contents)
+    s,e = go.index_guard_end(contents)
     assert_equals(s, 1)
     assert_equals(e, 8)
 
 def test_no_newline_at_eof():
     contents = '''
 #endif'''
-    s,e = go.indexGuardEnd(contents)
+    s,e = go.index_guard_end(contents)
     assert_equals(s, 1)
     assert_equals(e, 7)
 
@@ -49,13 +49,13 @@ def test_no_endif():
     contents = '''
 #endf
 '''
-    go.indexGuardEnd(contents)
+    go.index_guard_end(contents)
 
 def test_comment():
     contents = '''
 #endif /* MATCH_H */
 '''
-    s,e = go.indexGuardEnd(contents)
+    s,e = go.index_guard_end(contents)
     assert_equals(s, 1)
     assert_equals(e, 21)
 
@@ -68,6 +68,6 @@ def test_matches_last_endif():
 #endif /* WIN32 */
 #endif /* MATCH_H */
 '''
-    s,e = go.indexGuardEnd(contents)
+    s,e = go.index_guard_end(contents)
     assert_equals(s, 83)
     assert_equals(e, 103)

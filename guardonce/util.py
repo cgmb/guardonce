@@ -11,7 +11,7 @@ import re
 from fnmatch import fnmatch
 from functools import partial
 
-def guessGuard(contents):
+def guess_guard(contents):
     """
     Returns the guard, as well as the start and end indexes of the include
     guard from the start of the file, or throws ValueError if not found.
@@ -25,7 +25,7 @@ def guessGuard(contents):
         raise ValueError('guard start not found')
     return (match.group(1),) + match.span()
 
-def indexPragmaOnce(contents):
+def index_pragma_once(contents):
     """
     Returns the start and end indexes of the pragma once directive from
     the start of the file, or throws ValueError if not found. Comments
@@ -38,20 +38,20 @@ def indexPragmaOnce(contents):
         raise ValueError('pragma once not found')
     return match.span()
 
-def indexGuardStart(contents, guardSymbol):
+def index_guard_start(contents, guard_symbol):
     """
     Returns the start and end indexes of the include guard from the start of the
     file, or throws ValueError if not found. Comments are not supported.
     """
-    regex = re.compile(r"^[ \t]*\#[ \t]*ifndef[ \t]+" + guardSymbol
-        + r"[ \t]*\n[ \t]*\#[ \t]*define[ \t]+" + guardSymbol + r"[ \t]*$",
+    regex = re.compile(r"^[ \t]*\#[ \t]*ifndef[ \t]+" + guard_symbol
+        + r"[ \t]*\n[ \t]*\#[ \t]*define[ \t]+" + guard_symbol + r"[ \t]*$",
         re.MULTILINE)
     match = regex.search(contents)
     if not match:
         raise ValueError('guard start not found')
     return match.span()
 
-def indexGuardEnd(contents):
+def index_guard_end(contents):
     """
     Returns the start and end indexes of the last endif line from the
     file, or throws ValueError if not found. Comments are not supported.
@@ -65,28 +65,28 @@ def indexGuardEnd(contents):
         raise ValueError('guard end not found')
     return match.span()
 
-def getFileContents(fileName):
-    with open(fileName, 'r') as f:
+def get_file_contents(filename):
+    with open(filename, 'r') as f:
         return f.read()
 
-def writeFileContents(fileName, contents):
-    with open(fileName, 'w') as f:
+def write_file_contents(filename, contents):
+    with open(filename, 'w') as f:
         f.write(contents)
 
-def printError(error):
+def print_error(error):
     print(error, file=sys.stderr)
 
-def isHeaderFile(fileName):
+def is_header_file(filename):
     '''Returns true if the given file is identified as a C/C++ header file.'''
-    return fileName.endswith(('.h', '.hpp', '.H', '.hh'))
+    return filename.endswith(('.h', '.hpp', '.H', '.hh'))
 
-def isExcluded(filePath, exclusions):
+def is_excluded(filepath, exclusions):
     '''Returns true if the given file matches any of the exclusion patterns.'''
-    return any(map(partial(fnmatch, filePath), exclusions))
+    return any(map(partial(fnmatch, filepath), exclusions))
 
-def applyToHeaders(func, directory, exclusions):
-    for root, dirs, files in os.walk(directory, onerror=printError):
-        for fileName in files:
-            filePath = os.path.join(root, fileName)
-            if isHeaderFile(fileName) and not isExcluded(filePath, exclusions):
-                func(filePath, fileName)
+def apply_to_headers(func, directory, exclusions):
+    for root, dirs, files in os.walk(directory, onerror=print_error):
+        for filename in files:
+            filepath = os.path.join(root, filename)
+            if is_header_file(filename) and not is_excluded(filepath, exclusions):
+                func(filepath, filename)

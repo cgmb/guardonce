@@ -11,49 +11,50 @@ import os
 import re
 from fnmatch import fnmatch
 from functools import partial
-from .pattern_compiler import compilePattern, ParserError
-from .util import guessGuard, indexGuardStart, indexGuardEnd, getFileContents, writeFileContents, applyToHeaders, printError
+from .pattern_compiler import compile_pattern, ParserError
+from .util import (guess_guard, index_guard_start, index_guard_end,
+    get_file_contents, write_file_contents, apply_to_headers)
 
 __version__ = "1.0.0"
 
-def replaceGuard(contents, guard):
+def replace_guard(contents, guard):
     try:
         if guard:
-            start1, end1 = indexGuardStart(contents, guard)
+            start1, end1 = index_guard_start(contents, guard)
         else:
-            guard, start1, end1 = guessGuard(contents)
-        start2, end2 = indexGuardEnd(contents)
+            guard, start1, end1 = guess_guard(contents)
+        start2, end2 = index_guard_end(contents)
         return (contents[:start1] + '#pragma once' +
                 contents[end1:start2] + contents[end2:])
     except ValueError:
         return None
 
-def processFile(filePath, fileName, options):
+def process_file(filepath, filename, options):
     class Context:
         pass
     ctx = Context()
-    ctx.filePath = filePath
-    ctx.fileName = fileName
+    ctx.filepath = filepath
+    ctx.filename = filename
 
-    options.guard = options.createGuard(ctx)
+    options.guard = options.create_guard(ctx)
 
     try:
-        contents = getFileContents(filePath)
-        newContents = replaceGuard(contents, options.guard)
-        if newContents:
-            writeFileContents(filePath, newContents)
+        contents = get_file_contents(filepath)
+        new_contents = replace_guard(contents, options.guard)
+        if new_contents:
+            write_file_contents(filepath, new_contents)
     except Exception as e:
         print(e, file=sys.stderr)
 
-def processGuardPattern(guardPattern):
-    createGuard = lambda ctx: None
-    if guardPattern is not None:
+def process_guard_pattern(pattern):
+    create_guard = lambda ctx: None
+    if pattern is not None:
         try:
-            createGuard = compilePattern(guardPattern)
+            create_guard = compile_pattern(pattern)
         except ParserError as e:
-            printError(e)
+            print(e, file=sys.stderr)
             sys.exit(1)
-    return createGuard
+    return create_guard
 
 def main():
     parser = argparse.ArgumentParser(
@@ -87,15 +88,15 @@ def main():
     class Options:
         pass
     options = Options()
-    options.createGuard = processGuardPattern(args.pattern)
+    options.create_guard = process_guard_pattern(args.pattern)
 
     for f in args.files:
         if os.path.isdir(f):
             if args.recursive:
-                process = partial(processFile, options=options)
-                applyToHeaders(process, f, args.exclusions)
+                process = partial(process_file, options=options)
+                apply_to_headers(process, f, args.exclusions)
             else:
-                printError('"%s" is a directory' % f)
+                print('"%s" is a directory' % f, file=sys.stderr)
                 sys.exit(1)
         else:
-            processFile(f, os.path.basename(f), options)
+            process_file(f, os.path.basename(f), options)
