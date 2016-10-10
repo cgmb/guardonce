@@ -5,6 +5,7 @@
 """Create functions that generate include guard tokens from patterns."""
 
 import re
+from string import capwords
 
 class ParseState:
     Normal, Token, Complete = range(3)
@@ -58,6 +59,13 @@ def snake(s):
         prev_up = up
     return ''.join(snek)
 
+def pascal(s):
+    """
+    Converts an input string in snake_case to PascalCase. Also handles
+    names containing spaces... god help you if you actually need that.
+    """
+    return capwords(s.replace('_',' ')).replace(' ','')
+
 def sanitize(s):
     """
     Removes characters that are not allowed in macro names. Anything
@@ -97,6 +105,8 @@ def compile_pattern(pattern):
                 chain.append(lambda ctx, s: s.lower())
             elif token == 'snake':
                 chain.append(lambda ctx, s: snake(s))
+            elif token == 'pascal':
+                chain.append(lambda ctx, s: pascal(s))
             elif token == 'replace':
                 expected_arg = Args.Replace
             elif token == 'append':

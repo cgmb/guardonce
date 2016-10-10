@@ -50,6 +50,20 @@ def test_snake_acronym():
     ctx.filename = 'MatchHTTPFactory.h'
     assert_equals(createGuard(ctx), 'match_http_factory_h')
 
+def test_snake_single_letter_word():
+    pattern = 'name | snake'
+    createGuard = compile_pattern(pattern)
+    ctx = Context()
+    ctx.filename = 'BreakAStick.h'
+    assert_equals(createGuard(ctx), 'break_a_stick_h')
+
+def test_pascal():
+    pattern = 'name | pascal'
+    createGuard = compile_pattern(pattern)
+    ctx = Context()
+    ctx.filename = 'match_factory.h'
+    assert_equals(createGuard(ctx), 'MatchFactory_h')
+
 def test_prepend():
     pattern = 'name | prepend __'
     createGuard = compile_pattern(pattern)
