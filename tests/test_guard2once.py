@@ -21,7 +21,6 @@ int main() {
 int main() {
   return 0;
 }
-
 '''
     o = o2g.replace_guard(_input, 'MATCH_H')
     assert_multi_line_equal(o, expected)
@@ -61,7 +60,6 @@ int main() {
 int main() {
   return 0;
 }
-
 '''
     o = o2g.replace_guard(_input, None)
     assert_multi_line_equal(o, expected)
@@ -82,7 +80,6 @@ int main() {
 int main() {
   return 0;
 }
-
 '''
     o = o2g.replace_guard(_input, 'MATCH_H')
     assert_multi_line_equal(o, expected)
@@ -103,7 +100,6 @@ int main() {
 int main() {
   return 0;
 }
-
 '''
     o = o2g.replace_guard(_input, None)
     assert_multi_line_equal(o, expected)

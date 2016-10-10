@@ -24,6 +24,8 @@ def replace_guard(contents, guard):
         else:
             guard, start1, end1 = guess_guard(contents)
         start2, end2 = index_guard_end(contents)
+        if end2 < len(contents) and contents[end2] == '\n':
+            end2 += 1
         return (contents[:start1] + '#pragma once' +
                 contents[end1:start2] + contents[end2:])
     except ValueError:
