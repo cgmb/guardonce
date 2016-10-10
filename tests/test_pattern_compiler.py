@@ -22,6 +22,25 @@ def test_path():
     ctx.filepath = 'src/Match.h'
     assert_equals(createGuard(ctx), 'src_Match_h')
 
+def test_path_arg():
+    pattern = 'path 1'
+    createGuard = compile_pattern(pattern)
+    ctx = Context()
+    ctx.filepath = 'src/widgets/Match.h'
+    assert_equals(createGuard(ctx), 'widgets_Match_h')
+
+def test_path_big_arg():
+    pattern = 'path 10'
+    createGuard = compile_pattern(pattern)
+    ctx = Context()
+    ctx.filepath = 'src/widgets/Match.h'
+    assert_equals(createGuard(ctx), 'src_widgets_Match_h')
+
+@raises(ParserError)
+def test_path_bad_arg():
+    pattern = 'path lkj'
+    createGuard = compile_pattern(pattern)
+
 def test_upper():
     pattern = 'name | upper'
     createGuard = compile_pattern(pattern)

@@ -14,9 +14,12 @@ returns the file's basename
 
 ### path
 if recursive, returns the file's path relative to the root directory given to
-the program.
+the program. if not recursive, returns the path to the file given when
+invoking the program.
 
-if not recursive, returns the path to the file given when invoking the program.
+takes an optional argument specifying how many parent directories to include.
+
+e.g. `path 1`  does `src/Regex/Match.h -> Regex/Match.h`
 
 ## Filters
 ### upper

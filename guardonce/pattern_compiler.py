@@ -4,7 +4,9 @@
 
 """Create functions that generate include guard tokens from patterns."""
 
+import os
 import re
+import sys
 from string import capwords
 
 class ParseState:
@@ -43,6 +45,19 @@ def tokenize(pattern):
         start = end
     return tokens
 
+def splitpath(filepath, crumbs):
+    """
+    Splits a file path on the directory seperator
+    """
+    idx = len(filepath)
+    for i in range(crumbs + 1):
+        if idx >= 0:
+            idx = filepath.rfind(os.sep, 0, idx)
+    if idx <= 0:
+        return filepath
+    else:
+        return filepath[idx+1:]
+
 def snake(s):
     """
     Converts an input string in PascalCase to snake_case.
@@ -74,7 +89,11 @@ def sanitize(s):
     return re.sub(r"\W", '_', s)
 
 class Args:
-    Replace, ReplaceWith, AppendWith, PrependWith, SurroundWith = range(1,6)
+    """
+    An enum representing all arguments that can be passed to functions.
+    """
+    (Replace, ReplaceWith, AppendWith, PrependWith, SurroundWith,
+        PathCrumbs) = range(1,7)
 
 def compile_pattern(pattern):
     """
@@ -84,6 +103,7 @@ def compile_pattern(pattern):
     chain = []
     function = None
     expected_arg = None
+    optional_arg = False
     args = []
     raw = False
     for token in tokenize(pattern):
@@ -98,7 +118,8 @@ def compile_pattern(pattern):
             if token == 'name':
                 chain.append(lambda ctx, s: ctx.filename)
             elif token == 'path':
-                chain.append(lambda ctx, s: ctx.filepath)
+                expected_arg = Args.PathCrumbs
+                optional_arg = True
             elif token == 'upper':
                 chain.append(lambda ctx, s: s.upper())
             elif token == 'lower':
@@ -137,8 +158,19 @@ def compile_pattern(pattern):
         elif expected_arg == Args.SurroundWith:
             chain.append(lambda ctx, s, arg=token: arg + s + arg)
             expected_arg = None
+        elif expected_arg == Args.PathCrumbs:
+            try:
+                crumbs = int(token)
+            except ValueError:
+                raise ParserError('Invalid argument "%s" given to path; must be an integer' % token)
+            chain.append(lambda ctx, s, crumbs=crumbs: splitpath(ctx.filepath, crumbs))
+            expected_arg = None
+            optional_arg = False
 
-    if expected_arg:
+    if optional_arg:
+        if expected_arg == Args.PathCrumbs:
+            chain.append(lambda ctx, s: ctx.filepath)
+    elif expected_arg:
         raise ParserError('Missing argument from "%s" in pattern' % function)
 
     def process(ctx):
