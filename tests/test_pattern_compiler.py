@@ -2,6 +2,7 @@
 # Copyright (C) 2016 Cordell Bloor
 # Published under the MIT License
 
+import os
 from nose.tools import *
 from guardonce.pattern_compiler import *
 
@@ -19,21 +20,21 @@ def test_path():
     pattern = 'path'
     createGuard = compile_pattern(pattern)
     ctx = Context()
-    ctx.filepath = 'src/Match.h'
+    ctx.filepath = os.path.join('src','Match.h')
     assert_equals(createGuard(ctx), 'src_Match_h')
 
 def test_path_arg():
     pattern = 'path 1'
     createGuard = compile_pattern(pattern)
     ctx = Context()
-    ctx.filepath = 'src/widgets/Match.h'
+    ctx.filepath = os.path.join('src','widgets','Match.h')
     assert_equals(createGuard(ctx), 'widgets_Match_h')
 
 def test_path_big_arg():
     pattern = 'path 10'
     createGuard = compile_pattern(pattern)
     ctx = Context()
-    ctx.filepath = 'src/widgets/Match.h'
+    ctx.filepath = os.path.join('src','widgets','Match.h')
     assert_equals(createGuard(ctx), 'src_widgets_Match_h')
 
 @raises(ParserError)
