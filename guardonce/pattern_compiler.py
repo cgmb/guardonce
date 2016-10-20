@@ -6,7 +6,6 @@
 
 import os
 import re
-import sys
 from string import capwords
 
 class ParseState:

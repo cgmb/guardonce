@@ -8,8 +8,6 @@ from __future__ import print_function
 import argparse
 import sys
 import os
-import re
-from fnmatch import fnmatch
 from functools import partial
 from .pattern_compiler import compile_pattern, ParserError
 from .util import (guess_guard, index_guard_start, index_guard_end,
