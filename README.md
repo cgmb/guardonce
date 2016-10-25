@@ -59,3 +59,13 @@ it's as simple as:
 
 `once2guard.py -r "source_directory"`
 
+## Caveats:
+The conventions used to identify include guards are hardcoded into `crules.py`.
+You can change the code there to match whatever convention you use for your
+project. However, if you have inconsistent include guard conventions, it may be
+quite difficult to use guardonce. Originally, guardonce was developed to fix
+my problems, and I simply didn't have that problem. Sorry!
+
+But, I like you. So, I found a solution and fixed the problem on the
+development branch. When I manage to find the time, I'll be releasing that
+as guardonce v2.0.
