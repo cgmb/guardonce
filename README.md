@@ -31,8 +31,7 @@ guards.
 
 ## How to use:
 First, backup your source code. guardonce is naive. It will work without
-incident on most projects, but may not be able to handle every oddity found
-under the sun.
+incident on many projects, but may not be able to handle every oddity.
 
 Second, check your project for broken headers. To recursively search your
 project directories for the names of all files that lack proper include guards,
@@ -60,7 +59,7 @@ it's as simple as:
 `once2guard.py -r "source_directory"`
 
 ## Caveats:
-There are a few sorts of repositories that could difficult to convert with
+There are a few sorts of repositories that could be difficult to convert with
 guardonce. If you have inconsistent include guard conventions, defining the
 expected `guardSymbol` may be tedious. If you've indented your include guards,
 that may be a problem as well. Additionally, if you use a mixture of include
