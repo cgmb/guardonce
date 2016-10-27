@@ -14,14 +14,14 @@ class ParseState:
 class ParserError(Exception):
     pass
 
-def next_token(pattern, startIndex):
+def next_token(pattern, start):
     """
-    Given a pattern string and a startIndex, returns the end index of the next
+    Given a pattern string and a start index, returns the end index of the next
     token, including whitespace on either side.
     """
     state = ParseState.Normal
-    index = startIndex
-    for i in range(startIndex, len(pattern)):
+    index = start
+    for i in range(start, len(pattern)):
         if pattern[i].isspace():
             if state == ParseState.Token:
                 state = ParseState.Complete
