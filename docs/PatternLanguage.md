@@ -5,8 +5,8 @@ filters that modify it. After the last filter, all characters that cannot exist
 in include guards are replaced with `_`.
 
 Filters are separated by `|`. Filters can take arguments, which are separated
-by spaces. Strings generally do not need to be quoted, unless they contain `|`,
-whitespace or start with `@` (which is reserved).
+by spaces. Strings generally do not need to be quoted, unless they contain `|`
+or whitespace.
 
 ## Sources
 ### name

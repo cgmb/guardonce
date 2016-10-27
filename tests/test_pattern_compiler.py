@@ -183,6 +183,20 @@ def test_bad_arg():
     pattern = 'name upper'
     createGuard = compile_pattern(pattern)
 
+def todo_arg_single_quote():
+    pattern = "name | replace '|' W"
+    createGuard = compile_pattern(pattern)
+    ctx = Context()
+    ctx.filename = '|.h'
+    assert_equals(createGuard(ctx), 'W_h')
+
+def todo_arg_double_quote():
+    pattern = 'name | replace "|" W'
+    createGuard = compile_pattern(pattern)
+    ctx = Context()
+    ctx.filename = '|.h'
+    assert_equals(createGuard(ctx), 'W_h')
+
 @raises(ParserError)
 def todo_missing_filter():
     pattern = 'name |'
