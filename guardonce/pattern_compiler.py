@@ -102,13 +102,25 @@ def compile_pattern(pattern):
     Takes a pattern specification as a string, and returns a function that
     turns a file context into an include guard.
     """
+    sources = ['name','path']
+
     chain = []
     function = None
     expected_arg = None
     optional_arg = False
     args = []
     raw = False
-    for token in tokenize(pattern):
+
+    tokens = tokenize(pattern)
+    if not tokens:
+        raise ParserError('Pattern is empty')
+    elif tokens[0] not in sources:
+        raise ParserError('First function in pattern must be a source')
+
+    for token in tokens:
+        if raw:
+            raise ParserError('Raw function is a sink and must be last')
+
         if not expected_arg:
             if not function:
                 function = token

@@ -149,12 +149,17 @@ def test_raw():
     assert_equals(createGuard(ctx), 'Match.h')
 
 @raises(ParserError)
-def todo_raw_not_last():
+def test_raw_not_last():
     pattern = 'name | raw | upper'
     createGuard = compile_pattern(pattern)
 
 @raises(ParserError)
-def todo_does_not_start_with_source():
+def test_empty_pattern():
+    pattern = ''
+    createGuard = compile_pattern(pattern)
+
+@raises(ParserError)
+def test_does_not_start_with_source():
     pattern = 'upper'
     createGuard = compile_pattern(pattern)
 
