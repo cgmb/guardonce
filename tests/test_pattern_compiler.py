@@ -126,15 +126,12 @@ def test_replace():
     ctx.filename = 'Match.h'
     assert_equals(createGuard(ctx), 'Watch_h')
 
-@raises(ParserError)
-def todo_replace_too_many_characters():
-    pattern = 'name | replace abc _'
+def test_replace_multiple_characters():
+    pattern = 'name | replace bunny teapot'
     createGuard = compile_pattern(pattern)
-
-@raises(ParserError)
-def todo_replace_with_too_many_characters():
-    pattern = 'name | replace a bcd'
-    createGuard = compile_pattern(pattern)
+    ctx = Context()
+    ctx.filename = 'bunny.h'
+    assert_equals(createGuard(ctx), 'teapot_h')
 
 @raises(ParserError)
 def todo_replace_with_whitespace():

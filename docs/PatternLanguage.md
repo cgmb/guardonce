@@ -43,9 +43,9 @@ converts PascalCase to snake_case
 e.g. `SpriteAnimator.h -> sprite_animator.h`
 
 ### replace
-substitutes one character for another
+substitutes one string for another
 
-e.g. `replace . _`  does `Match.h -> Match_h`
+e.g. `replace M Sw`  does `Match.h -> Swatch.h`
 
 ### append
 appends the given string to the end of the input
