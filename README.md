@@ -60,12 +60,18 @@ it's as simple as:
 `once2guard.py -r "source_directory"`
 
 ## Caveats:
-The conventions used to identify include guards are hardcoded into `crules.py`.
-You can change the code there to match whatever convention you use for your
-project. However, if you have inconsistent include guard conventions, it may be
-quite difficult to use guardonce. Originally, guardonce was developed to fix
-my problems, and I simply didn't have that problem. Sorry!
+There are a few sorts of repositories that could difficult to convert with
+guardonce. If you have inconsistent include guard conventions, defining the
+expected `guardSymbol` may be tedious. If you've indented your include guards,
+that may be a problem as well. Additionally, if you use a mixture of include
+guards and pragma once already, checkguard will not be of much help.
 
-But, I like you. So, I found a solution and fixed the problem on the
-development branch. When I manage to find the time, I'll be releasing that
-as guardonce v2.0.
+These issues and others were identified and fixed on the development branch.
+The documentation, however, has not been written and there may yet be some
+tweaks to the user interface. When that is done, the result will be released
+as guardonce v2.0. There will likely be a beta soon.
+
+This project caught a lot of attention a little earlier than I was expecting.
+guardonce v2.0 should 'just work' for far more people than v1.0 does. The
+first version was written to convert my own repositories, and the second was
+developed to ensure that various open source projects were easy to convert.
