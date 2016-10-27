@@ -63,13 +63,16 @@ def snake(s):
     """
     snek = []
     prev_up = False
+    prev_alnum = False
     for idx, c in enumerate(s):
+        alnum = c.isalnum()
         up = c.isupper()
         next_up = s[idx+1].isupper() if idx+1 < len(s) else False
-        if (up and not prev_up and idx != 0 or
+        if (up and not prev_up and prev_alnum and idx != 0 or
             up and prev_up and not next_up and idx != len(s)):
             snek.append('_')
         snek.append(c.lower())
+        prev_alnum = alnum
         prev_up = up
     return ''.join(snek)
 

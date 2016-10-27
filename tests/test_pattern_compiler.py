@@ -77,6 +77,20 @@ def test_snake_single_letter_word():
     ctx.filename = 'BreakAStick.h'
     assert_equals(createGuard(ctx), 'break_a_stick_h')
 
+def test_snake_path():
+    pattern = 'path 1 | snake'
+    createGuard = compile_pattern(pattern)
+    ctx = Context()
+    ctx.filepath = os.path.join('Code','CaptureContext.h')
+    assert_equals(createGuard(ctx), 'code_capture_context_h')
+
+def test_snake_symbols():
+    pattern = 'name | snake | raw'
+    createGuard = compile_pattern(pattern)
+    ctx = Context()
+    ctx.filename = 'Micro$oftWord.h'
+    assert_equals(createGuard(ctx), 'micro$oft_word.h')
+
 def test_pascal():
     pattern = 'name | pascal'
     createGuard = compile_pattern(pattern)
