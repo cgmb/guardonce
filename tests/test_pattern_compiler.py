@@ -200,6 +200,6 @@ def todo_arg_double_quote():
     assert_equals(createGuard(ctx), 'W_h')
 
 @raises(ParserError)
-def todo_missing_filter():
+def test_missing_filter():
     pattern = 'name |'
     createGuard = compile_pattern(pattern)

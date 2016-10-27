@@ -116,6 +116,8 @@ def compile_pattern(pattern):
         raise ParserError('Pattern is empty')
     elif tokens[0] not in sources:
         raise ParserError('First function in pattern must be a source')
+    elif tokens[-1] == '|':
+        raise ParserError('Pattern ends with pipe to nowhere')
 
     for token in tokens:
         if raw:
