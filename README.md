@@ -25,37 +25,38 @@ your project. These should be addressed before converting.
 once directives. This ensures your entire project is consistently using #pragma
 once.
 
-3. `once2guard` converts files with pragma once directives back into files with
-include guards. This ensures your entire project is consistently using include
-guards.
+3. `once2guard` converts files with #pragma once directives back into files
+with include guards. This ensures your entire project is consistently using
+include guards.
+
+## How to Install:
+Whether you use Python 2 or Python 3, these tools can be installed with
+`python -m pip install guardonce`. If you're unfamiliar with pip, you may want
+to take a look at
+[the Python package installation guide](https://docs.python.org/3/installing/).
 
 ## How to use:
-First, backup your source code. guardonce is naive. It will work without
-incident on most projects, but may not be able to handle every oddity found
-under the sun.
-
-Second, check your project for broken headers. To recursively search your
+First, check your project for broken headers. To recursively search your
 project directories for the names of all files that lack proper include guards,
 use the following command, substituting your project's directory for the
 quoted string:
 
-`./checkguard.py -r "source_directory"`
+`checkguard -r "source_directory"`
 
-The expected form of an include guard is `FILENAME_EXT`. For example, the
-file `BigBadWolf.h` is expected to include a guard `BIGBADWOLF_H`. If your
-include guards take some other form, you may need to adjust the `guardSymbol`
-in `crules.py`.
+By default, checkguard is very forgiving. It accepts either #pragma once or
+anything that looks like an include guard. If you know that all your guards
+should match some format, you can be more strict by using `-p` to specify
+[a pattern](docs/PatternLanguage.md) to check against.
 
 If certain files are not supposed to have include guards, feel free to leave
 them be. Files without include guards are ignored by this next step.
 
 Now, all that remains is converting the headers to use #pragma once:
 
-`guard2once.py -r "source_directory"`
+`guard2once -r "source_directory"`
 
 You're done! Double check that the result matches your expectations and start
 using #pragma once in your new code. Know that if you ever need to switch back,
 it's as simple as:
 
-`once2guard.py -r "source_directory"`
-
+`once2guard -r "source_directory"`
