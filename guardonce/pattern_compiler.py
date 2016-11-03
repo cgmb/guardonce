@@ -9,7 +9,7 @@ import re
 from string import capwords
 
 class ParseState:
-    Normal, Token, Complete = range(3)
+    Normal, Token, SingleQuote, DoubleQuote, Complete = range(5)
 
 class ParserError(Exception):
     pass
@@ -22,17 +22,47 @@ def next_token(pattern, start):
     state = ParseState.Normal
     index = start
     for i in range(start, len(pattern)):
-        if pattern[i].isspace():
-            if state == ParseState.Token:
+        if state == ParseState.SingleQuote:
+            if pattern[i] == "'":
                 state = ParseState.Complete
-        elif pattern[i] == '|':
-            break # always delimits tokens
+        elif state == ParseState.DoubleQuote:
+            if pattern[i] == '"':
+                state = ParseState.Complete
         else:
-            if state == ParseState.Complete:
-                break # start of new token
-            state = ParseState.Token
+            if pattern[i].isspace():
+                if state == ParseState.Token:
+                    state = ParseState.Complete
+            elif pattern[i] == '|':
+                break # delimits tokens
+            elif pattern[i] == '"':
+                if state == ParseState.Complete:
+                    break # start of new token
+                state = ParseState.DoubleQuote
+            elif pattern[i] == "'":
+                if state == ParseState.Complete:
+                    break # start of new token
+                state = ParseState.SingleQuote
+            else:
+                if state == ParseState.Complete:
+                    break # start of new token
+                state = ParseState.Token
         index = i
+
+    if state in [ParseState.SingleQuote, ParseState.DoubleQuote]:
+        raise ParserError('Pattern contains unclosed quote')
+
     return index + 1
+
+def unquote(s):
+    """
+    Strips matching single and double quotes from the start and end of the
+    given string.
+    """
+    if len(s) > 1 and ((s[0] == '"' and s[-1] == '"') or
+                       (s[0] == "'" and s[-1] == "'")):
+        return s[1:-1]
+    else:
+        return s
 
 def tokenize(pattern):
     tokens = []
@@ -160,19 +190,19 @@ def compile_pattern(pattern):
             raise ParserError('Missing argument from "%s" in pattern' % function)
         elif expected_arg == Args.Replace:
             expected_arg = Args.ReplaceWith
-            args.append(token)
+            args.append(unquote(token))
         elif expected_arg == Args.ReplaceWith:
-            chain.append(lambda ctx, s, f=args[0], t=token: s.replace(f, t))
+            chain.append(lambda ctx, s, f=args[0], t=unquote(token): s.replace(f, t))
             expected_arg = None
             args = []
         elif expected_arg == Args.AppendWith:
-            chain.append(lambda ctx, s, suffix=token: s + suffix)
+            chain.append(lambda ctx, s, suffix=unquote(token): s + suffix)
             expected_arg = None
         elif expected_arg == Args.PrependWith:
-            chain.append(lambda ctx, s, prefix=token: prefix + s)
+            chain.append(lambda ctx, s, prefix=unquote(token): prefix + s)
             expected_arg = None
         elif expected_arg == Args.SurroundWith:
-            chain.append(lambda ctx, s, arg=token: arg + s + arg)
+            chain.append(lambda ctx, s, arg=unquote(token): arg + s + arg)
             expected_arg = None
         elif expected_arg == Args.PathCrumbs:
             try:

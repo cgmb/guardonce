@@ -133,9 +133,28 @@ def test_replace_multiple_characters():
     ctx.filename = 'bunny.h'
     assert_equals(createGuard(ctx), 'teapot_h')
 
+def test_replace_with_whitespace():
+    pattern = "name | replace a ' ' | raw"
+    createGuard = compile_pattern(pattern)
+    ctx = Context()
+    ctx.filename = 'Match.h'
+    assert_equals(createGuard(ctx), 'M tch.h')
+
+def test_replace_with_empty_string():
+    pattern = "name | replace a '' | raw"
+    createGuard = compile_pattern(pattern)
+    ctx = Context()
+    ctx.filename = 'Match.h'
+    assert_equals(createGuard(ctx), 'Mtch.h')
+
 @raises(ParserError)
-def todo_replace_with_whitespace():
-    pattern = "name | replace a ' '"
+def test_replace_with_unclosed_single_quote():
+    pattern = "name | replace a ' "
+    createGuard = compile_pattern(pattern)
+
+@raises(ParserError)
+def test_replace_with_unclosed_double_quote():
+    pattern = 'name | replace a " '
     createGuard = compile_pattern(pattern)
 
 def test_raw():
@@ -185,14 +204,14 @@ def test_bad_arg():
     pattern = 'name upper'
     createGuard = compile_pattern(pattern)
 
-def todo_arg_single_quote():
+def test_arg_single_quote():
     pattern = "name | replace '|' W"
     createGuard = compile_pattern(pattern)
     ctx = Context()
     ctx.filename = '|.h'
     assert_equals(createGuard(ctx), 'W_h')
 
-def todo_arg_double_quote():
+def test_arg_double_quote():
     pattern = 'name | replace "|" W'
     createGuard = compile_pattern(pattern)
     ctx = Context()
