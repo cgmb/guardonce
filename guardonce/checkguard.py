@@ -13,7 +13,7 @@ from .pattern_compiler import compile_pattern, ParserError
 from .util import (guess_guard, index_guard_start, index_guard_end,
     index_pragma_once, get_file_contents, apply_to_headers)
 
-__version__ = "1.0.0"
+__version__ = "2.0.0"
 
 def is_protected_by_guard(contents, guard_symbol):
     try:
