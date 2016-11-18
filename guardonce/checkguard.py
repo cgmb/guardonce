@@ -120,3 +120,6 @@ def main():
                 sys.exit(1)
         else:
             process_file(f, os.path.basename(f), options)
+
+if __name__ == "__main__":
+    main()
