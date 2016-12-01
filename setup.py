@@ -69,14 +69,6 @@ There are three main tools provided by guardonce:
    files with include guards. This ensures your entire project is
    consistently using include guards.
 
-How to Install:
----------------
-
-Whether you use Python 2 or Python 3, these tools can be installed with
-``python -m pip install guardonce``. If you're unfamiliar with pip, you
-may want to take a look at `the Python package installation
-guide <https://docs.python.org/3/installing/>`__.
-
 How to use:
 -----------
 
