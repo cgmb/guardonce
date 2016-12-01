@@ -29,12 +29,6 @@ once.
 with include guards. This ensures your entire project is consistently using
 include guards.
 
-## How to Install:
-Whether you use Python 2 or Python 3, these tools can be installed with
-`python -m pip install guardonce`. If you're unfamiliar with pip, you may want
-to take a look at
-[the Python package installation guide](https://docs.python.org/3/installing/).
-
 ## How to use:
 First, check your project for broken headers. To recursively search your
 project directories for the names of all files that lack proper include guards,
@@ -60,3 +54,20 @@ using #pragma once in your new code. Know that if you ever need to switch back,
 it's as simple as:
 
 `once2guard -r "source_directory"`
+
+## How to Install:
+Whether you use Python 2 or Python 3, these tools can be installed with
+`python -m pip install guardonce`. If you're unfamiliar with pip, you may want
+to take a look at
+[the Python package installation guide](https://docs.python.org/3/installing/).
+
+guardonce currently has no dependencies outside of the standard library, so it
+can also be used just by downloading a copy of the source, and running commands
+from the source directory, invoking the utilities as Python modules. For
+example:
+
+```
+git clone https://github.com/cgmb/guardonce.git
+cd guardonce
+python -m guardonce.checkguard -r ~/myproject
+```
