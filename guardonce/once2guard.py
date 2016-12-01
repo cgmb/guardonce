@@ -65,9 +65,6 @@ def main():
             'option')
     parser.add_argument('-V','--version', action='version',
             version='%(prog)s ' + __version__)
-    parser.add_argument('-v','--verbose',
-            action='store_true',
-            help='display more information about actions being taken')
     parser.add_argument('-r','--recursive',
             action='store_true',
             dest='recursive',
@@ -75,13 +72,20 @@ def main():
     parser.add_argument('-p','--pattern',
             default='name|upper',
             metavar='pattern',
-            help='generate include guards based on the specified pattern')
+            help='generate include guards that match the specified pattern. '
+            "For example, -p 'name | upper' would create the guard MATCH_H "
+            'for the file Match.h. See the docs on GitHub for a full '
+            'description of the guard pattern language.')
     parser.add_argument('-e','--exclude',
             action='append',
             dest='exclusions',
             metavar='pattern',
             default=[],
-            help='exclude files that match the given pattern')
+            help='exclude files that match the given fnmatch pattern. '
+            'Any * is a wildcard matching everything; '
+            'a ? matches any single character; '
+            '[_] matches any characters within the brackets; '
+            'and [!_] matches any characters not within the brackets.')
     args = parser.parse_args()
 
     class Options:
