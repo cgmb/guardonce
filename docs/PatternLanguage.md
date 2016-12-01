@@ -6,7 +6,10 @@ in include guards are replaced with `_`.
 
 Filters are separated by `|`. Filters can take arguments, which are separated
 by spaces. Strings generally do not need to be quoted, unless they contain `|`
-or whitespace.
+, `'`, `"`, or whitespace. Either `'` or `"` can be used to quote.
+
+Feedback is appreciated. If you have a real-world project which uses a guard
+pattern that is difficult to specify, please open an issue.
 
 ## Sources
 ### name
