@@ -1,4 +1,5 @@
-## [v2.0.0] | 2016-11-XX
+## [v2.0.0] | 2016-12-01
+- Any include guard pattern is now accepted by default
 - Packaged for PyPI
 - [[Issue #12]] Added support for Python 3.5
 - [[Issue #9]] checkguard no longer warns about files using pragma once
