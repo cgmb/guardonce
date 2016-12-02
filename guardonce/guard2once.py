@@ -73,10 +73,10 @@ def main():
     parser.add_argument('-p','--pattern',
             default=None,
             metavar='pattern',
-            help='replace only include guards match the specified pattern. '
-            "For example, -p 'name | upper' would only change the guard in "
-            'Match.h if it had the symbol MATCH_H. See the docs on GitHub '
-            'for a full description of the guard pattern language.')
+            help='replace only include guards that match the specified '
+            "pattern. For example, -p 'name | upper' would only change the "
+            'guard in Match.h if it had the symbol MATCH_H. See the docs on '
+            'GitHub for a full description of the guard pattern language.')
     parser.add_argument('-e','--exclude',
             action='append',
             dest='exclusions',

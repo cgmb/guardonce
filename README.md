@@ -71,3 +71,6 @@ git clone https://github.com/cgmb/guardonce.git
 cd guardonce
 python -m guardonce.checkguard -r ~/myproject
 ```
+
+Note that on Windows, you may need to invoke guardonce via `python -m` even if
+you install with pip.
