@@ -25,52 +25,52 @@ your project. These should be addressed before converting.
 once directives. This ensures your entire project is consistently using #pragma
 once.
 
-3. `once2guard` converts files with pragma once directives back into files with
-include guards. This ensures your entire project is consistently using include
-guards.
+3. `once2guard` converts files with #pragma once directives back into files
+with include guards. This ensures your entire project is consistently using
+include guards.
 
 ## How to use:
-First, backup your source code. guardonce is naive. It will work without
-incident on many projects, but may not be able to handle every oddity.
-
-Second, check your project for broken headers. To recursively search your
+First, check your project for broken headers. To recursively search your
 project directories for the names of all files that lack proper include guards,
 use the following command, substituting your project's directory for the
 quoted string:
 
-`./checkguard.py -r "source_directory"`
+`checkguard -r "source_directory"`
 
-The expected form of an include guard is `FILENAME_EXT`. For example, the
-file `BigBadWolf.h` is expected to include a guard `BIGBADWOLF_H`. If your
-include guards take some other form, you may need to adjust the `guardSymbol`
-in `crules.py`.
+By default, checkguard is very forgiving. It accepts either #pragma once or
+anything that looks like an include guard. If you know that all your guards
+should match some format, you can be more strict by using `-p` to specify
+[a pattern](docs/PatternLanguage.md) to check against.
 
 If certain files are not supposed to have include guards, feel free to leave
 them be. Files without include guards are ignored by this next step.
 
 Now, all that remains is converting the headers to use #pragma once:
 
-`guard2once.py -r "source_directory"`
+`guard2once -r "source_directory"`
 
 You're done! Double check that the result matches your expectations and start
 using #pragma once in your new code. Know that if you ever need to switch back,
 it's as simple as:
 
-`once2guard.py -r "source_directory"`
+`once2guard -r "source_directory"`
 
-## Caveats:
-There are a few sorts of repositories that could be difficult to convert with
-guardonce. If you have inconsistent include guard conventions, defining the
-expected `guardSymbol` may be tedious. If you've indented your include guards,
-that may be a problem as well. Additionally, if you use a mixture of include
-guards and pragma once already, checkguard will not be of much help.
+## How to Install:
+Whether you use Python 2 or Python 3, these tools can be installed with
+`python -m pip install guardonce`. If you're unfamiliar with pip, you may want
+to take a look at
+[the Python package installation guide](https://docs.python.org/3/installing/).
 
-These issues and others were identified and fixed on the development branch.
-The documentation, however, has not been written and there may yet be some
-tweaks to the user interface. When that is done, the result will be released
-as guardonce v2.0. There will likely be a beta soon.
+guardonce currently has no dependencies outside of the standard library, so it
+can also be used just by downloading a copy of the source, and running commands
+from the source directory, invoking the utilities as Python modules. For
+example:
 
-This project caught a lot of attention a little earlier than I was expecting.
-guardonce v2.0 should 'just work' for far more people than v1.0 does. The
-first version was written to convert my own repositories, and the second was
-developed to ensure that various open source projects were easy to convert.
+```
+git clone https://github.com/cgmb/guardonce.git
+cd guardonce
+python -m guardonce.checkguard -r ~/myproject
+```
+
+Note that on Windows, you may need to invoke guardonce via `python -m` even if
+you install with pip.

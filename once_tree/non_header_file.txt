@@ -1,1 +1,0 @@
-This isn't a header file. It has no include guard.
