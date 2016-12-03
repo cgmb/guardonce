@@ -5,7 +5,7 @@ Utilities for converting from C/C++ include guards to #pragma once and
 back again.
 
 ## Why Convert?
-Include guards suck. They're tiring to type and tedius to update. Worse, the
+Include guards suck. They're tiring to type and tedious to update. Worse, the
 task of updating boilerplate leaves room for copy/paste errors, or other
 mistakes. #pragma once is simpler and less error prone. That's why you should
 convert to #pragma once.
