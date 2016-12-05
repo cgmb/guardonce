@@ -57,19 +57,27 @@ e.g. `replace M Sw`  does `Match.h -> Swatch.h`
 ### append
 appends the given string to the end of the input
 
-e.g. `append __`  does `Match.h -> Match.h__`
+e.g. `append _included`  does `Match.h -> Match.h_included`
 
 ### prepend
 prepends the given string to the beginning of the input
 
-e.g. `prepend __`  does `Match.h -> __Match.h`
+e.g. `prepend included_`  does `Match.h -> included_Match.h`
 
 ### surround
 surround the input with the given string
 
-e.g. `surround __`  does `Match.h -> __Match.h__`
+e.g. `surround xx`  does `Match.h -> xxMatch.hxx`
 
 ## Sink
 ### raw
 if the pipeline ends in a raw sink, then the normal substitution of illegal
-characters by _ is suppressed
+characters by `_` is suppressed
+
+## Usage Notes
+You may want to consider the rules for valid guards. In the global namespace,
+both the C and C++ languages reserve all names that:
+* start with an underscore
+* contain two underscores in a row
+
+These should be avoided.
