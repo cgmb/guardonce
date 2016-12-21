@@ -54,6 +54,11 @@ substitutes one string for another
 
 e.g. `replace M Sw`  does `Match.h -> Swatch.h`
 
+### remove
+removes all occurrences of a string
+
+e.g. `remove t`  does `Match.h -> Mach.h`
+
 ### append
 appends the given string to the end of the input
 

@@ -119,6 +119,13 @@ def test_surround():
     ctx.filename = 'Match.h'
     assert_equals(createGuard(ctx), '__Match_h__')
 
+def test_remove():
+    pattern = 'name | remove atch'
+    createGuard = compile_pattern(pattern)
+    ctx = Context()
+    ctx.filename = 'Match.h'
+    assert_equals(createGuard(ctx), 'M_h')
+
 def test_replace():
     pattern = 'name | replace M W'
     createGuard = compile_pattern(pattern)

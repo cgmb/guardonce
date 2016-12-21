@@ -125,7 +125,7 @@ class Args:
     An enum representing all arguments that can be passed to functions.
     """
     (Replace, ReplaceWith, AppendWith, PrependWith, SurroundWith,
-        PathCrumbs) = range(1,7)
+        PathCrumbs, Remove) = range(1,8)
 
 def compile_pattern(pattern):
     """
@@ -174,6 +174,8 @@ def compile_pattern(pattern):
                 chain.append(lambda ctx, s: snake(s))
             elif token == 'pascal':
                 chain.append(lambda ctx, s: pascal(s))
+            elif token == 'remove':
+                expected_arg = Args.Remove
             elif token == 'replace':
                 expected_arg = Args.Replace
             elif token == 'append':
@@ -188,6 +190,9 @@ def compile_pattern(pattern):
                 raise ParserError('Unknown function "%s" in pattern' % token)
         elif token == '|':
             raise ParserError('Missing argument from "%s" in pattern' % function)
+        elif expected_arg == Args.Remove:
+            chain.append(lambda ctx, s, t=unquote(token): s.replace(t, ''))
+            expected_arg = None
         elif expected_arg == Args.Replace:
             expected_arg = Args.ReplaceWith
             args.append(unquote(token))
