@@ -105,3 +105,12 @@ def test_extra_whitespace_on_define():
     s,e = go.index_guard_start(contents, 'MATCH_H')
     assert_equals(s, 1)
     assert_equals(e, 33)
+
+def test_define_with_value_1():
+    contents = '''
+#ifndef MATCH_H
+#define MATCH_H 1
+'''
+    s,e = go.index_guard_start(contents, 'MATCH_H')
+    assert_equals(s, 1)
+    assert_equals(e, 34)

@@ -18,7 +18,7 @@ def guess_guard(contents):
     Comments are not supported.
     """
     regex = re.compile(r"^[ \t]*\#[ \t]*ifndef[ \t]+([\w]+)"
-        + r"[ \t]*\n[ \t]*\#[ \t]*define[ \t]+\1[ \t]*$",
+        + r"[ \t]*\n[ \t]*\#[ \t]*define[ \t]+\1([ \t]+1)?[ \t]*$",
         re.MULTILINE)
     match = regex.search(contents)
     if not match:
@@ -44,7 +44,8 @@ def index_guard_start(contents, guard_symbol):
     file, or throws ValueError if not found. Comments are not supported.
     """
     regex = re.compile(r"^[ \t]*\#[ \t]*ifndef[ \t]+" + guard_symbol
-        + r"[ \t]*\n[ \t]*\#[ \t]*define[ \t]+" + guard_symbol + r"[ \t]*$",
+        + r"[ \t]*\n[ \t]*\#[ \t]*define[ \t]+" + guard_symbol
+        + r"([ \t]+1)?[ \t]*$",
         re.MULTILINE)
     match = regex.search(contents)
     if not match:

@@ -94,3 +94,13 @@ def test_extra_whitespace_on_define():
     assert_equals(g, 'MATCH_H')
     assert_equals(s, 1)
     assert_equals(e, 33)
+
+def test_define_with_value_1():
+    contents = '''
+#ifndef MATCH_H
+#define MATCH_H 1
+'''
+    g,s,e = go.guess_guard(contents)
+    assert_equals(g, 'MATCH_H')
+    assert_equals(s, 1)
+    assert_equals(e, 34)
