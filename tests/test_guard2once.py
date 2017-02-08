@@ -103,3 +103,24 @@ int main() {
 '''
     o = o2g.replace_guard(_input, None)
     assert_multi_line_equal(expected, o)
+
+def test_strip_trailing_whitespace():
+    _input = '''
+#ifndef MATCH_H
+#define MATCH_H
+
+int main() {
+  return 0;
+}
+
+#endif /* MATCH_H */
+'''
+    expected = '''
+#pragma once
+
+int main() {
+  return 0;
+}
+'''
+    o = o2g.replace_guard(_input, None, strip=True)
+    assert_multi_line_equal(expected, o)

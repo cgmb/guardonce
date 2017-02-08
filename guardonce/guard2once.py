@@ -15,7 +15,7 @@ from .util import (guess_guard, index_guard_start, index_guard_end,
 
 __version__ = "2.0.0"
 
-def replace_guard(contents, guard):
+def replace_guard(contents, guard, strip=False):
     try:
         if guard:
             start1, end1 = index_guard_start(contents, guard)
@@ -24,8 +24,14 @@ def replace_guard(contents, guard):
         start2, end2 = index_guard_end(contents)
         if end2 < len(contents) and contents[end2] == '\n':
             end2 += 1
-        return (contents[:start1] + '#pragma once' +
+
+        replaced = (contents[:start1] + '#pragma once' +
                 contents[end1:start2] + contents[end2:])
+
+        if strip:
+            return replaced.rstrip() + '\n'
+        else:
+            return replaced
     except ValueError:
         return None
 
@@ -40,7 +46,8 @@ def process_file(filepath, filename, options):
 
     try:
         contents = get_file_contents(filepath)
-        new_contents = replace_guard(contents, options.guard)
+        new_contents = replace_guard(contents, options.guard,
+                strip=options.strip)
         if new_contents:
             write_file_contents(filepath, new_contents)
     except Exception as e:
@@ -87,11 +94,16 @@ def main():
             'a ? matches any single character; '
             '[_] matches any characters within the brackets; '
             'and [!_] matches any characters not within the brackets.')
+    parser.add_argument('-s','--strip',
+            action='store_true',
+            dest='strip',
+            help='strip trailing whitespace after removing guard')
     args = parser.parse_args()
 
     class Options:
         pass
     options = Options()
+    options.strip = args.strip
     options.create_guard = process_guard_pattern(args.pattern)
 
     for f in args.files:
