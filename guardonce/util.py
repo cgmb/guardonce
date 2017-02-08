@@ -57,7 +57,7 @@ def index_guard_end(contents):
     Returns the start and end indexes of the last endif line from the
     file, or throws ValueError if not found. Comments are not supported.
     """
-    regex = re.compile(r"^[ \t]*\#[ \t]*endif([ \t]+.*|[ \t]*)$",
+    regex = re.compile(r"^[ \t]*\#[ \t]*endif([/ \t]+.*|[ \t]*)$",
         re.MULTILINE)
     match = None
     for match in regex.finditer(contents):

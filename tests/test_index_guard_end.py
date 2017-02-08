@@ -71,3 +71,11 @@ def test_matches_last_endif():
     s,e = go.index_guard_end(contents)
     assert_equals(s, 83)
     assert_equals(e, 103)
+
+def test_no_space_before_comment():
+    contents = '''
+#endif//MATCH_H
+'''
+    s,e = go.index_guard_end(contents)
+    assert_equals(s, 1)
+    assert_equals(e, 16)
