@@ -104,7 +104,9 @@ def main():
             metavar='type',
             default='any',
             choices=['guard','once','g','o'],
-            help='only accept the specified type of include protection')
+            help='only accept the specified type of include protection. '
+            "Use 'guard' or 'g' to only accept include guards, or "
+            "use 'once' or 'o' to only accept #pragma once.")
     args = parser.parse_args()
 
     class Options:
