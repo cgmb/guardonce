@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2016 Cordell Bloor
+# Copyright (C) 2016-2017 Cordell Bloor
 # Published under the MIT License
 
 """Find C or C++ header files with incorrect or missing include guards."""
