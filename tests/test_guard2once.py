@@ -124,3 +124,36 @@ int main() {
 '''
     o = o2g.replace_guard(_input, None, strip=True)
     assert_multi_line_equal(expected, o)
+
+def test_unknown_pattern_requires_content_between_guard_start_and_end():
+    _input = '''
+#ifndef ONE
+#define ONE 1
+#endif
+
+int main() {
+  return 0;
+}
+'''
+    o = o2g.replace_guard(_input, None)
+    assert_equal(None, o)
+
+def test_known_pattern_does_not_require_content_between_guard_start_and_end():
+    _input = '''
+#ifndef ONE
+#define ONE 1
+#endif
+
+int main() {
+  return 0;
+}
+'''
+    expected = '''
+#pragma once
+
+int main() {
+  return 0;
+}
+'''
+    o = o2g.replace_guard(_input, 'ONE')
+    assert_multi_line_equal(expected, o)

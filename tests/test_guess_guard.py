@@ -104,3 +104,22 @@ def test_define_with_value_1():
     assert_equals(g, 'MATCH_H')
     assert_equals(s, 1)
     assert_equals(e, 34)
+
+@raises(ValueError)
+def test_define():
+    contents = '''
+#ifndef ONE
+#define ONE 1
+#endif
+'''
+    go.guess_guard(contents)
+
+@raises(ValueError)
+def test_define_with_space():
+    contents = '''
+#ifndef ONE
+#define ONE 1
+ 
+#endif
+'''
+    go.guess_guard(contents)
