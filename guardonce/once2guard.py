@@ -13,7 +13,7 @@ from .pattern_compiler import compile_pattern, ParserError
 from .util import (index_pragma_once, get_file_contents, write_file_contents,
     apply_to_headers)
 
-__version__ = "2.0.0"
+__version__ = "2.1.0"
 
 def replace_pragma_once(contents, guard):
     guard_open = '#ifndef {0}\n#define {0}'.format(guard)
