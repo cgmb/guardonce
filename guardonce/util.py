@@ -10,6 +10,7 @@ import os
 import re
 from fnmatch import fnmatch
 from functools import partial
+from itertools import islice
 
 def next_nonempty_line(contents, start):
     """
@@ -18,8 +19,7 @@ def next_nonempty_line(contents, start):
     line.
     """
     line_end = len(contents) - 1
-    for i in xrange(start, len(contents)):
-        c = contents[i]
+    for i, c in enumerate(islice(contents, start, None), start):
         if c == '\n':
            line_end = i
         elif c not in ' \t':
@@ -31,8 +31,8 @@ def next_line(contents, start):
     Returns the index of the first character of the next line, or returns
     len(contents) if there is no next line.
     """
-    for i in xrange(start, len(contents)):
-        if contents[i] == '\n':
+    for i, c in enumerate(islice(contents, start, None), start):
+        if c == '\n':
            return i + 1
     return len(contents)
 
