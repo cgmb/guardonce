@@ -1,5 +1,6 @@
 ## [v2.1.0] | 2017-02-14
 - Improved heuristics for guessing include guard symbols
+- Added 'remove' command to pattern language
 - [[Issue #10]] Added option to strip trailing whitespace when removing guards
 - [[Issue #14]] Comments immediately following #endif are now accepted
 - [[Issue #15]] Include guards with the value 1 are now recognized
