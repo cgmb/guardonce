@@ -57,14 +57,11 @@ it's as simple as:
 
 ## How to Install:
 Whether you use Python 2 or Python 3, these tools can be installed with
-`python -m pip install guardonce`. If you're unfamiliar with pip, you may want
-to take a look at
-[the Python package installation guide](https://docs.python.org/3/installing/).
+`python -m pip install guardonce`.
 
-guardonce currently has no dependencies outside of the standard library, so it
-can also be used just by downloading a copy of the source, and running commands
-from the source directory, invoking the utilities as Python modules. For
-example:
+It is also possible to instead just run from the repository. However, you'll
+need to use slightly different commands to do so. When you're in the source
+directory, you can invoke the tools as python modules. For example:
 
 ```
 git clone https://github.com/cgmb/guardonce.git
