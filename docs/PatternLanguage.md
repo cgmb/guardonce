@@ -8,10 +8,6 @@ Filters are separated by `|`. Filters can take arguments, which are separated
 by spaces. Strings generally do not need to be quoted, unless they contain `|`
 , `'`, `"`, or whitespace. Either `'` or `"` can be used to quote.
 
-The language may experience backwards-incompatible changes between minor
-releases, though probably only in ways that affect filenames with special
-characters.
-
 Feedback on the language is appreciated. If you have a real-world project which
 uses a guard pattern that is difficult to specify, please open an issue.
 
