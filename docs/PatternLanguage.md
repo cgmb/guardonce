@@ -21,8 +21,10 @@ the program. if not recursive, returns the path to the file given when
 invoking the program.
 
 takes an optional argument specifying how many parent directories to include.
+negative values instead specify how many parent directories to remove.
 
-e.g. `path 1`  does `src/Regex/Match.h -> Regex/Match.h`
+e.g. `path 1` does `proj/src/Regex/Match.h -> Regex/Match.h`
+     `path -1` does `proj/src/Regex/Match.h -> src/Regex/Match.h`
 
 ## Filters
 ### upper

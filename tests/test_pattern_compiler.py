@@ -45,6 +45,27 @@ def test_path_big_arg():
     ctx.filepath = os.path.join('src','widgets','Match.h')
     assert_equals(createGuard(ctx), 'src_widgets_Match_h')
 
+def test_path_zero_arg():
+    pattern = 'path 0'
+    createGuard = compile_pattern(pattern)
+    ctx = Context()
+    ctx.filepath = os.path.join('src','widgets','Match.h')
+    assert_equals(createGuard(ctx), 'Match_h')
+
+def test_path_negative_arg():
+    pattern = 'path -1'
+    createGuard = compile_pattern(pattern)
+    ctx = Context()
+    ctx.filepath = os.path.join('src','widgets','Match.h')
+    assert_equals(createGuard(ctx), 'widgets_Match_h')
+
+def test_path_negative_big_arg():
+    pattern = 'path -2'
+    createGuard = compile_pattern(pattern)
+    ctx = Context()
+    ctx.filepath = 'Match.h'
+    assert_equals(createGuard(ctx), 'Match_h')
+
 @raises(ParserError)
 def test_path_bad_arg():
     pattern = 'path lkj'

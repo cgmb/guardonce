@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2016 Cordell Bloor
+# Copyright (C) 2016-2017 Cordell Bloor
 # Published under the MIT License
 
 """Create functions that generate include guard tokens from patterns."""
@@ -76,8 +76,12 @@ def tokenize(pattern):
 
 def splitpath(filepath, crumbs):
     """
-    Splits a file path on the directory seperator
+    Splits a file path on the directory separator. The crumbs argument
+    specifies how many parent directories should be included. Negative
+    crumb values are interpreted as relative to the max possible.
     """
+    if crumbs < 0:
+        crumbs += max(filepath.count(os.sep), -crumbs)
     idx = len(filepath)
     for i in range(crumbs + 1):
         if idx >= 0:
