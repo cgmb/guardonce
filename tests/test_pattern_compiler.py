@@ -23,6 +23,14 @@ def test_path():
     ctx.filepath = os.path.join('src','Match.h')
     assert_equals(createGuard(ctx), 'src_Match_h')
 
+def test_path_no_arg_with_filter():
+    '''Bug #19'''
+    pattern = 'path | upper'
+    createGuard = compile_pattern(pattern)
+    ctx = Context()
+    ctx.filepath = os.path.join('src','Match.h')
+    assert_equals(createGuard(ctx), 'SRC_MATCH_H')
+
 def test_path_arg():
     pattern = 'path 1'
     createGuard = compile_pattern(pattern)

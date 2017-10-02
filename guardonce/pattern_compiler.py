@@ -189,7 +189,14 @@ def compile_pattern(pattern):
             elif token != '|':
                 raise ParserError('Unknown function "%s" in pattern' % token)
         elif token == '|':
-            raise ParserError('Missing argument from "%s" in pattern' % function)
+            if optional_arg:
+                function = None
+                if expected_arg == Args.PathCrumbs:
+                    chain.append(lambda ctx, s: ctx.filepath)
+                    expected_arg = None
+                    optional_arg = False
+            else:
+                raise ParserError('Missing argument from "%s" in pattern' % function)
         elif expected_arg == Args.Remove:
             chain.append(lambda ctx, s, t=unquote(token): s.replace(t, ''))
             expected_arg = None
