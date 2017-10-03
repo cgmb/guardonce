@@ -22,9 +22,11 @@ invoking the program.
 
 takes an optional argument specifying how many parent directories to include.
 negative values instead specify how many parent directories to remove.
+when provided, the result is equivalent to `path | parents <N>`.
 
 e.g. `path 1` does `proj/src/Regex/Match.h -> Regex/Match.h`
      `path -1` does `proj/src/Regex/Match.h -> src/Regex/Match.h`
+     `path -2` does `/workspace/proj/src/Regex/Match.h -> src/Regex/Match.h`
 
 ## Filters
 ### upper
@@ -71,6 +73,14 @@ e.g. `prepend included_`  does `Match.h -> included_Match.h`
 surround the input with the given string
 
 e.g. `surround xx`  does `Match.h -> xxMatch.hxx`
+
+### parents
+takes an argument specifying how many parent directories to keep.
+negative values instead specify how many parent directories to remove.
+
+e.g. `path | parents 1` does `proj/src/Regex/Match.h -> Regex/Match.h`
+     `path | parents -1` does `proj/src/Regex/Match.h -> src/Regex/Match.h`
+     `path | parents -2` does `/workspace/proj/src/Regex/Match.h -> src/Regex/Match.h`
 
 ## Sink
 ### raw

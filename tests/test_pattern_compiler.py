@@ -6,6 +6,16 @@ import os
 from nose.tools import *
 from guardonce.pattern_compiler import *
 
+def windows_only(f):
+    """Only execute on windows systems"""
+    f.__test__ = os.name == "nt"
+    return f
+
+def unix_only(f):
+    """Only execute on unix systems"""
+    f.__test__ = os.name == "posix"
+    return f
+
 class Context:
     pass
 
@@ -66,10 +76,87 @@ def test_path_negative_big_arg():
     ctx.filepath = 'Match.h'
     assert_equals(createGuard(ctx), 'Match_h')
 
+@unix_only
+def test_path_absolute_path():
+    pattern = 'path -1'
+    createGuard = compile_pattern(pattern)
+    ctx = Context()
+    ctx.filepath = '/dev/null'
+    assert_equals(createGuard(ctx), 'null')
+
+@windows_only
+def test_path_absolute_path_windows():
+    pattern = 'path -1'
+    createGuard = compile_pattern(pattern)
+    ctx = Context()
+    ctx.filepath = 'C:\Program Files (x86)\Match.h'
+    assert_equals(createGuard(ctx), 'Match_h')
+
 @raises(ParserError)
 def test_path_bad_arg():
     pattern = 'path lkj'
     createGuard = compile_pattern(pattern)
+
+def test_parents_arg():
+    pattern = 'path | parents 1'
+    createGuard = compile_pattern(pattern)
+    ctx = Context()
+    ctx.filepath = os.path.join('src','widgets','Match.h')
+    assert_equals(createGuard(ctx), 'widgets_Match_h')
+
+@raises(ParserError)
+def test_parents_missing_arg():
+    pattern = 'path parents'
+    createGuard = compile_pattern(pattern)
+
+def test_parents_big_arg():
+    pattern = 'path | parents 10'
+    createGuard = compile_pattern(pattern)
+    ctx = Context()
+    ctx.filepath = os.path.join('src','widgets','Match.h')
+    assert_equals(createGuard(ctx), 'src_widgets_Match_h')
+
+def test_parents_zero_arg():
+    pattern = 'path | parents 0'
+    createGuard = compile_pattern(pattern)
+    ctx = Context()
+    ctx.filepath = os.path.join('src','widgets','Match.h')
+    assert_equals(createGuard(ctx), 'Match_h')
+
+def test_parents_negative_arg():
+    pattern = 'path | parents -1'
+    createGuard = compile_pattern(pattern)
+    ctx = Context()
+    ctx.filepath = os.path.join('src','widgets','Match.h')
+    assert_equals(createGuard(ctx), 'widgets_Match_h')
+
+def test_parents_negative_big_arg():
+    pattern = 'path | parents -2'
+    createGuard = compile_pattern(pattern)
+    ctx = Context()
+    ctx.filepath = 'Match.h'
+    assert_equals(createGuard(ctx), 'Match_h')
+
+@raises(ParserError)
+def test_parents_bad_arg():
+    pattern = 'path | parents lkj'
+    createGuard = compile_pattern(pattern)
+
+@unix_only
+def test_parents_absolute_path():
+    pattern = 'path | parents -1'
+    createGuard = compile_pattern(pattern)
+    ctx = Context()
+    ctx.filepath = '/dev/null'
+    assert_equals(createGuard(ctx), 'null')
+
+@windows_only
+def test_parents_absolute_path_windows():
+    pattern = 'path | parents -1'
+    createGuard = compile_pattern(pattern)
+    ctx = Context()
+    ctx.filepath = 'C:\Program Files (x86)\Match.h'
+    assert_equals(createGuard(ctx), 'Match_h')
 
 def test_upper():
     pattern = 'name | upper'

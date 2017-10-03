@@ -74,19 +74,21 @@ def tokenize(pattern):
         start = end
     return tokens
 
-def splitpath(filepath, crumbs):
+def trim_parents(filepath, crumbs):
     """
-    Splits a file path on the directory separator. The crumbs argument
-    specifies how many parent directories should be included. Negative
-    crumb values are interpreted as relative to the max possible.
+    Discards part of the given filepath. The base file is always kept. The
+    crumbs argument specifies how many parent directories to keep. Negative
+    crumb values are interpreted as relative to the total number of parents.
     """
     if crumbs < 0:
-        crumbs += max(filepath.count(os.sep), -crumbs)
+        if os.path.isabs(filepath):
+            crumbs -= 1
+        crumbs = max(crumbs + filepath.count(os.sep), 0)
     idx = len(filepath)
     for i in range(crumbs + 1):
         if idx >= 0:
             idx = filepath.rfind(os.sep, 0, idx)
-    if idx <= 0:
+    if idx < 0:
         return filepath
     else:
         return filepath[idx+1:]
@@ -129,7 +131,7 @@ class Args:
     An enum representing all arguments that can be passed to functions.
     """
     (Replace, ReplaceWith, AppendWith, PrependWith, SurroundWith,
-        PathCrumbs, Remove) = range(1,8)
+        PathCrumbs, Remove, TrimParentsBy) = range(1,9)
 
 def compile_pattern(pattern):
     """
@@ -188,6 +190,8 @@ def compile_pattern(pattern):
                 expected_arg = Args.PrependWith
             elif token == 'surround':
                 expected_arg = Args.SurroundWith
+            elif token == 'parents':
+                expected_arg = Args.TrimParentsBy
             elif token == 'raw':
                 raw = True
             elif token != '|':
@@ -220,12 +224,19 @@ def compile_pattern(pattern):
         elif expected_arg == Args.SurroundWith:
             chain.append(lambda ctx, s, arg=unquote(token): arg + s + arg)
             expected_arg = None
+        elif expected_arg == Args.TrimParentsBy:
+            try:
+                crumbs = int(token)
+            except ValueError:
+                raise ParserError('Invalid argument "%s" given to parents must be an integer' % token)
+            chain.append(lambda ctx, s, crumbs=crumbs: trim_parents(s, crumbs))
+            expected_arg = None
         elif expected_arg == Args.PathCrumbs:
             try:
                 crumbs = int(token)
             except ValueError:
                 raise ParserError('Invalid argument "%s" given to path; must be an integer' % token)
-            chain.append(lambda ctx, s, crumbs=crumbs: splitpath(ctx.filepath, crumbs))
+            chain.append(lambda ctx, s, crumbs=crumbs: trim_parents(ctx.filepath, crumbs))
             expected_arg = None
             optional_arg = False
 
