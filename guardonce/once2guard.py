@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2016 Cordell Bloor
+# Copyright (C) 2016-2017 Cordell Bloor
 # Published under the MIT License
 
 """Replace #pragma once with C and C++ include guards."""
@@ -12,16 +12,25 @@ from functools import partial
 from string import Template
 from .pattern_compiler import compile_pattern, ParserError
 from .util import (index_pragma_once, get_file_contents, write_file_contents,
-    apply_to_headers)
+    apply_to_headers, ends_with_blank_line)
 
 __version__ = "2.1.0"
 
-def replace_pragma_once(contents, guard, endif_template=Template('#endif\n')):
+def replace_pragma_once(contents, guard,
+        endif_template=Template('#endif\n'), endif_newline=False):
     guard_open = '#ifndef {0}\n#define {0}'.format(guard)
     guard_close = endif_template.safe_substitute(guard=guard)
     try:
         once_start, once_end = index_pragma_once(contents)
-        nl = '' if contents.endswith('\n') else '\n'
+
+        # figure out how many newlines to put before the guard
+        if ends_with_blank_line(contents):
+            nl = ''
+        elif contents.endswith('\n'):
+            nl = '\n' if endif_newline else ''
+        else:
+            nl = '\n\n' if endif_newline else '\n'
+
         return (contents[:once_start]
             + guard_open
             + contents[once_end:]
@@ -41,7 +50,7 @@ def process_file(filepath, filename, options):
     try:
         contents = get_file_contents(filepath)
         new_contents = replace_pragma_once(contents, options.guard,
-            options.endif_template)
+            options.endif_template, options.endif_newline)
         if new_contents:
             write_file_contents(filepath, new_contents)
     except Exception as e:
@@ -94,6 +103,11 @@ def main():
             help='use the given template for the inserted #endif. '
             'The include guard can be referenced in the template as ${guard}. '
             'Any other uses of $ must be escaped as $$.')
+    parser.add_argument('-l','--endif-newline',
+            action='store_true',
+            dest='endif_newline',
+            help='insert a blank line before #endif if none would exist '
+            'otherwise')
     parser.add_argument('-p','--pattern',
             default='name|upper',
             metavar='pattern',
@@ -118,6 +132,7 @@ def main():
     options = Options()
     options.create_guard = process_guard_pattern(args.pattern)
     options.endif_template = Template(decode_escapes(args.endif_template))
+    options.endif_newline = args.endif_newline
 
     for f in args.files:
         if os.path.isdir(f):

@@ -12,6 +12,13 @@ from fnmatch import fnmatch
 from functools import partial
 from itertools import islice
 
+def ends_with_blank_line(contents):
+    """
+    Returns true if the given string ends with a line that is either empty or
+    only composed of whitespace.
+    """
+    return re.search('\n\s*\n\Z', contents) is not None
+
 def next_nonempty_line(contents, start):
     """
     Returns the index of the first character of the next line containing
