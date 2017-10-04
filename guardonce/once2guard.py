@@ -9,15 +9,16 @@ import argparse
 import sys
 import os
 from functools import partial
+from string import Template
 from .pattern_compiler import compile_pattern, ParserError
 from .util import (index_pragma_once, get_file_contents, write_file_contents,
     apply_to_headers)
 
 __version__ = "2.1.0"
 
-def replace_pragma_once(contents, guard):
+def replace_pragma_once(contents, guard, endif_template=Template('#endif\n')):
     guard_open = '#ifndef {0}\n#define {0}'.format(guard)
-    guard_close = '#endif\n'
+    guard_close = endif_template.safe_substitute(guard=guard)
     try:
         once_start, once_end = index_pragma_once(contents)
         nl = '' if contents.endswith('\n') else '\n'
@@ -39,7 +40,8 @@ def process_file(filepath, filename, options):
 
     try:
         contents = get_file_contents(filepath)
-        new_contents = replace_pragma_once(contents, options.guard)
+        new_contents = replace_pragma_once(contents, options.guard,
+            options.endif_template)
         if new_contents:
             write_file_contents(filepath, new_contents)
     except Exception as e:
@@ -55,6 +57,22 @@ def process_guard_pattern(pattern):
             sys.exit(1)
     return create_guard
 
+def decode_escapes(s):
+    import re
+    import codecs
+    def decode_match(match):
+        return codecs.decode(match.group(0), 'unicode-escape')
+    # https://stackoverflow.com/a/24519338
+    escapes = re.compile(r'''
+        ( \\U........      # 8-digit hex escapes
+        | \\u....          # 4-digit hex escapes
+        | \\x..            # 2-digit hex escapes
+        | \\[0-7]{1,3}     # Octal escapes
+        | \\N\{[^}]+\}     # Unicode characters by name
+        | \\[\\'"abfnrtv]  # Single-character escapes
+        )''', re.UNICODE | re.VERBOSE)
+    return escapes.sub(decode_match, s)
+
 def main():
     parser = argparse.ArgumentParser(
             description='Replace #pragma once with C and C++ include guards.')
@@ -69,6 +87,13 @@ def main():
             action='store_true',
             dest='recursive',
             help='recursively search directories for headers')
+    parser.add_argument('-s','--endif-style',
+            dest='endif_template',
+            metavar='template',
+            default='#endif\n',
+            help='use the given template for the inserted #endif. '
+            'The include guard can be referenced in the template as ${guard}. '
+            'Any other uses of $ must be escaped as $$.')
     parser.add_argument('-p','--pattern',
             default='name|upper',
             metavar='pattern',
@@ -92,6 +117,7 @@ def main():
         pass
     options = Options()
     options.create_guard = process_guard_pattern(args.pattern)
+    options.endif_template = Template(decode_escapes(args.endif_template))
 
     for f in args.files:
         if os.path.isdir(f):
