@@ -55,6 +55,10 @@ def process_file(filepath, filename, options):
 
     options.guard = options.create_guard(ctx)
 
+    if options.print_guard:
+        print(options.guard)
+        return
+
     try:
         if not is_file_protected(filepath, options):
             print(filepath)
@@ -111,7 +115,16 @@ def main():
             help='only accept the specified type of include protection. '
             "Use 'guard' or 'g' to only accept include guards, or "
             "use 'once' or 'o' to only accept #pragma once.")
+    parser.add_argument('-n','--print-guard',
+            action='store_true',
+            dest='print_guard',
+            help='skip the check and instead print the include guards generated '
+            'by --pattern.')
     args = parser.parse_args()
+
+    if args.print_guard and args.pattern is None:
+        print('Cannot print expected guard without guard pattern. Specify --pattern.', file=sys.stderr)
+        sys.exit(1)
 
     class Options:
         pass
@@ -119,6 +132,7 @@ def main():
     options.accept_guard = args.type in ['g', 'guard', 'any']
     options.accept_once = args.type in ['o', 'once', 'any']
     options.create_guard = process_pattern(args.pattern)
+    options.print_guard = args.print_guard
 
     for f in args.files:
         if os.path.isdir(f):
