@@ -9,17 +9,54 @@ import argparse
 import sys
 import os
 from functools import partial
-from string import Template
 from .pattern_compiler import compile_pattern, ParserError
 from .util import (index_pragma_once, get_file_contents, write_file_contents,
     apply_to_headers, ends_with_blank_line)
 
 __version__ = "2.1.0"
 
+class Template:
+    """
+    A purpose-built string formatter. It replaces % with the value passed to sub.
+    % can be escaped as %%. It does nothing else, so there are no surprises.
+    string.Template is a decent alternative, but its syntax is more complex
+    than really necessary for these purposes.
+    """
+    def __init__(self, fmtstr):
+        self.placeholder = object()
+        self.pieces = gather_pieces(fmtstr, self.placeholder)
+
+    def sub(self, guard):
+        return ''.join([guard if x == self.placeholder else x for x in self.pieces])
+
+def gather_pieces(fmtstr, placeholder):
+    pieces = []
+    substr = []
+    escape = False
+    for c in fmtstr:
+        if escape:
+            if c == '%':
+                substr.append(c)
+            else:
+                pieces.append(''.join(substr))
+                substr = []
+                pieces.append(placeholder)
+                substr.append(c)
+            escape = False
+        else:
+            if c == '%':
+                escape = True
+            else:
+                substr.append(c)
+    pieces.append(''.join(substr))
+    if escape:
+        pieces.append(placeholder)
+    return pieces
+
 def replace_pragma_once(contents, guard,
         endif_template=Template('#endif\n'), endif_newline=False):
     guard_open = '#ifndef {0}\n#define {0}'.format(guard)
-    guard_close = endif_template.safe_substitute(guard=guard)
+    guard_close = endif_template.sub(guard)
     try:
         once_start, once_end = index_pragma_once(contents)
 
@@ -101,8 +138,8 @@ def main():
             metavar='template',
             default='#endif\n',
             help='use the given template for the inserted #endif. '
-            'The include guard can be referenced in the template as ${guard}. '
-            'Any other uses of $ must be escaped as $$.')
+            'The include guard can be referenced in the template with %. '
+            'Any other uses of % must be escaped as %%.')
     parser.add_argument('-l','--endif-newline',
             action='store_true',
             dest='endif_newline',
