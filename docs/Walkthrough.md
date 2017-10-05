@@ -5,7 +5,9 @@ include guards and #pragma once.
 ## Abseil
 [Abseil][1] is a good example of a project that uses include guards. If we want
 to check that it is consistently following its include guard naming convention,
-we can supply a pattern to `checkguard`. Let's download it and try.
+we can supply a [pattern](PatternLanguage.md) to `checkguard`. Let's download
+it and try. Just in case the project has changed since this guide was written,
+we'll checkout the same version I used.
 
 ```bash
 git clone https://github.com/abseil/abseil-cpp
@@ -20,8 +22,8 @@ your pattern correctly, adding `-n` will cause `checkguard` to print out the
 expected guards rather than doing the check.
 
 It's not strictly necessary to check your headers before converting, but it's
-a good time to catch old mistakes and checking usually doesn't take very long
-so I recommend it. Doing the check also gives you the confidence to specify an
+a good time to catch old mistakes. I recommend it. Checking usually doesn't
+take very long. Doing the check also gives you the confidence to specify an
 expected pattern for `guard2once` to look for when converting, like so:
 
 ```bash
