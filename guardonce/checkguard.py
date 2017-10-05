@@ -8,13 +8,12 @@ from __future__ import print_function
 import argparse
 import sys
 import os
-import re
 from functools import partial
 from .pattern_compiler import compile_pattern, ParserError
 from .util import (guess_guard, index_guard_start, index_guard_end,
     index_pragma_once, get_file_contents, apply_to_headers)
 
-__version__ = "2.1.0"
+__version__ = "2.2.0"
 
 def is_reserved_token(token):
     return token[0] == '_' or token.find('__') != -1

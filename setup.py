@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name = 'guardonce',
-    version = '2.1.0',
+    version = '2.2.0',
     description = 'Utilities for converting from C/C++ include guards to #pragma once and back again',
     license = 'MIT',
     url = 'https://github.com/cgmb/guardonce',
@@ -83,7 +83,7 @@ for the quoted string:
 By default, checkguard is very forgiving. It accepts either #pragma once
 or anything that looks like an include guard. If you know that all your
 guards should match some format, you can be more strict by using ``-p``
-to specify `a pattern <docs/PatternLanguage.md>`__ to check against.
+to specify a pattern to check against.
 
 If certain files are not supposed to have include guards, feel free to
 leave them be. Files without include guards are ignored by this next
@@ -98,5 +98,9 @@ start using #pragma once in your new code. Know that if you ever need to
 switch back, it's as simple as:
 
 ``once2guard -r "source_directory"``
+
+If you require a specific style for your guards, there are a number of
+options to customize guardonce output. A pair of walkthroughs illustrating
+round-trip conversions of two real-world projects can be found in the docs.
 """
 )

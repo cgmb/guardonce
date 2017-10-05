@@ -13,7 +13,7 @@ from .pattern_compiler import compile_pattern, ParserError
 from .util import (guess_guard, index_guard_start, index_guard_end,
     get_file_contents, write_file_contents, apply_to_headers)
 
-__version__ = "2.1.0"
+__version__ = "2.2.0"
 
 def replace_guard(contents, guard, strip=False):
     try:
