@@ -59,21 +59,21 @@ def replace_pragma_once(contents, guard,
     guard_close = endif_template.sub(guard)
     try:
         once_start, once_end = index_pragma_once(contents)
-
-        # figure out how many newlines to put before the guard
-        if ends_with_blank_line(contents):
-            nl = ''
-        elif contents.endswith('\n'):
-            nl = '\n' if endif_newline else ''
-        else:
-            nl = '\n\n' if endif_newline else '\n'
-
-        return (contents[:once_start]
-            + guard_open
-            + contents[once_end:]
-            + nl + guard_close)
     except ValueError:
         return None
+
+    # figure out how many newlines to put before the guard
+    if ends_with_blank_line(contents):
+        nl = ''
+    elif contents.endswith('\n'):
+        nl = '\n' if endif_newline else ''
+    else:
+        nl = '\n\n' if endif_newline else '\n'
+
+    return (contents[:once_start]
+        + guard_open
+        + contents[once_end:]
+        + nl + guard_close)
 
 def process_file(filepath, filename, options):
     class Context:

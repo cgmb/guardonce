@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2016 Cordell Bloor
+# Copyright (C) 2016-2017 Cordell Bloor
 # Published under the MIT License
 
 """Replace C and C++ include guards with #pragma once."""
@@ -22,18 +22,18 @@ def replace_guard(contents, guard, strip=False):
         else:
             guard, start1, end1 = guess_guard(contents)
         start2, end2 = index_guard_end(contents)
-        if end2 < len(contents) and contents[end2] == '\n':
-            end2 += 1
-
-        replaced = (contents[:start1] + '#pragma once' +
-                contents[end1:start2] + contents[end2:])
-
-        if strip:
-            return replaced.rstrip() + '\n'
-        else:
-            return replaced
     except ValueError:
         return None
+    if end2 < len(contents) and contents[end2] == '\n':
+        end2 += 1
+
+    replaced = (contents[:start1] + '#pragma once' +
+            contents[end1:start2] + contents[end2:])
+
+    if strip:
+        return replaced.rstrip() + '\n'
+    else:
+        return replaced
 
 def process_file(filepath, filename, options):
     class Context:
