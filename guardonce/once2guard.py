@@ -11,7 +11,7 @@ import os
 from functools import partial
 from .pattern_compiler import compile_pattern, ParserError
 from .util import (index_pragma_once, get_file_contents, write_file_contents,
-    apply_to_headers, ends_with_blank_line)
+    apply_to_headers, ends_with_blank_line, py2)
 
 __version__ = "2.2.0"
 
@@ -104,11 +104,20 @@ def process_guard_pattern(pattern):
             sys.exit(1)
     return create_guard
 
+def es(ustr):
+    '''
+    Encodes the given unicode string to str
+    '''
+    if py2:
+        return ustr.encode('utf8')
+    else:
+        return ustr
+
 def decode_escapes(s):
     import re
     import codecs
     def decode_match(match):
-        return codecs.decode(match.group(0), 'unicode-escape')
+        return es(codecs.decode(match.group(0), 'unicode-escape'))
     # https://stackoverflow.com/a/24519338
     escapes = re.compile(r'''
         ( \\U........      # 8-digit hex escapes
