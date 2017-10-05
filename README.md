@@ -55,6 +55,11 @@ it's as simple as:
 
 `once2guard -r "source_directory"`
 
+If you require a specific style for your guards, there are a number of options
+to customize guardonce output. A [pair of walkthroughs](docs/Walkthrough.md)
+illustrating round-trip conversions of two real-world projects can be found in
+the docs.
+
 ## How to Install:
 Whether you use Python 2 or Python 3, these tools can be installed with
 `python -m pip install guardonce`.

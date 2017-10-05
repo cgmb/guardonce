@@ -13,79 +13,107 @@ uses a guard pattern that is difficult to specify, please open an issue.
 
 ## Sources
 ### name
-returns the file's basename
+Returns the file's basename.
 
 ### path
-if recursive, returns the file's path relative to the root directory given to
-the program. if not recursive, returns the path to the file given when
-invoking the program.
+If recursive, returns the file's path relative to the root directory given to
+the program. If not recursive, returns the path to the file given when invoking
+the program.
 
-takes an optional argument specifying how many parent directories to include.
-negative values instead specify how many parent directories to remove.
-when provided, the result is equivalent to `path | parents <N>`.
+Takes an optional argument specifying how many parent directories to include.
+Negative values instead specify how many parent directories to remove.
+When an argument is provided, the result is equivalent to `path | parents <N>`.
 
-e.g. `path 1` does `proj/src/Regex/Match.h -> Regex/Match.h`
-     `path -1` does `proj/src/Regex/Match.h -> src/Regex/Match.h`
-     `path -2` does `/workspace/proj/src/Regex/Match.h -> src/Regex/Match.h`
+| Command |       File        |      Output       |
+|---------|-------------------|-------------------|
+| path    | src/Regex/Match.h | src/Regex/Match.h |
+| path 0  | src/Regex/Match.h | Match.h           |
+| path 1  | src/Regex/Match.h | Regex/Match.h     |
+| path 2  | src/Regex/Match.h | src/Regex/Match.h |
+| path -1 | src/Regex/Match.h | Regex/Match.h     |
+| path -2 | src/Regex/Match.h | Match.h           |
 
 ## Filters
 ### upper
-returns the input, converted to uppercase
+Returns the input, converted to uppercase.
 
-e.g. `Match.h -> MATCH.H`
+|  Input  | Output  |
+|---------|---------|
+| Match.h | MATCH.H |
 
 ### lower
-returns the input, converted to uppercase
+Returns the input, converted to lowercase.
 
-e.g. `Match.h -> match.h`
+|  Input  | Output  |
+|---------|---------|
+| Match.h | match.h |
 
 ### pascal
-converts snake_case to PascalCase
+Converts snake_case to PascalCase.
 
-e.g. `sprite_animator.h -> SpriteAnimator.h`
+|       Input       |      Output      |
+|-------------------|------------------|
+| sprite_animator.h | SpriteAnimator.h |
 
 ### snake
-converts PascalCase to snake_case
+Converts PascalCase to snake_case.
 
-e.g. `SpriteAnimator.h -> sprite_animator.h`
+|       Input      |      Output       |
+|------------------|-------------------|
+| SpriteAnimator.h | sprite_animator.h |
 
 ### replace
-substitutes one string for another
+Substitutes one string for another.
 
-e.g. `replace M Sw`  does `Match.h -> Swatch.h`
+|   Command    |  Input  |  Output  |
+|--------------|---------|----------|
+| replace M Sw | Match.h | Swatch.h |
 
 ### remove
-removes all occurrences of a string
+Removes all occurrences of a string.
 
-e.g. `remove t`  does `Match.h -> Mach.h`
+| Command  |  Input  | Output |
+|----------|---------|--------|
+| remove t | Match.h | Mach.h |
 
 ### append
-appends the given string to the end of the input
+Appends the given string to the end of the input
 
-e.g. `append _included`  does `Match.h -> Match.h_included`
+|  Command  |  Input  |  Output   |
+|-----------|---------|-----------|
+| append pp | Match.h | Match.hpp |
 
 ### prepend
-prepends the given string to the beginning of the input
+Prepends the given string to the beginning of the input
 
-e.g. `prepend included_`  does `Match.h -> included_Match.h`
+|  Command   |  Input  |  Output   |
+|------------|---------|-----------|
+| prepend Re | Match.h | ReMatch.h |
 
 ### surround
-surround the input with the given string
+Surround the input with the given string
 
-e.g. `surround xx`  does `Match.h -> xxMatch.hxx`
+|  Command   |  Input  |  Output   |
+|------------|---------|-----------|
+| surround x | Match.h | xMatch.hx |
 
 ### parents
-takes an argument specifying how many parent directories to keep.
-negative values instead specify how many parent directories to remove.
+Trims an input file path. Takes an argument specifying how many parent
+directories to keep. Negative values instead specify how many parent
+directories to remove.
 
-e.g. `path | parents 1` does `proj/src/Regex/Match.h -> Regex/Match.h`
-     `path | parents -1` does `proj/src/Regex/Match.h -> src/Regex/Match.h`
-     `path | parents -2` does `/workspace/proj/src/Regex/Match.h -> src/Regex/Match.h`
+|  Command   |       Input       |      Output       |
+|------------|-------------------|-------------------|
+| parents 0  | src/Regex/Match.h | Match.h           |
+| parents 1  | src/Regex/Match.h | Regex/Match.h     |
+| parents 2  | src/Regex/Match.h | src/Regex/Match.h |
+| parents -1 | src/Regex/Match.h | Regex/Match.h     |
+| parents -2 | src/Regex/Match.h | Match.h           |
 
 ## Sink
 ### raw
-if the pipeline ends in a raw sink, then the normal substitution of illegal
-characters by `_` is suppressed
+If the pipeline ends in a raw sink, then the normal substitution of illegal
+characters by `_` is suppressed.
 
 ## Usage Notes
 You may want to consider the rules for valid guards. In the global namespace,
