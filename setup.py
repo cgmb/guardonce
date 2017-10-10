@@ -99,8 +99,8 @@ switch back, it's as simple as:
 
 ``once2guard -r "source_directory"``
 
-If you require a specific style for your guards, there are a number of
-options to customize guardonce output. A pair of walkthroughs illustrating
-round-trip conversions of two real-world projects can be found in the docs.
+If the default guard style doesn't appeal to you, there are a few
+options to customize it. Maybe take a look through ``once2guard --help``
+or check out a walkthrough for some examples.
 """
 )
