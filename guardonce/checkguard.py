@@ -62,7 +62,8 @@ def process_file(filepath, filename, options):
         if not is_file_protected(filepath, options):
             print(filepath)
     except Exception as e:
-        print(e, file=sys.stderr)
+        print('Error processing {0}:\n\t({1}) {2}'.format(filepath,
+            e.__class__.__name__, str(e)), file=sys.stderr)
 
 def process_pattern(guard_pattern):
     create_guard = lambda ctx: None
