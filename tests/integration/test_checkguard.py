@@ -3,48 +3,13 @@
 # Published under the MIT License
 
 from nose.tools import *
-from subprocess import Popen, PIPE
-import collections
-import os
-import shlex
-import sys
+from .util import (quickcall, w)
 
 checkguard = 'guardonce.checkguard'
 
-py2 = sys.version_info < (3,)
-
-if not py2:
-    basestring = str
-
-def ds(s):
-    """
-    Decodes the given byte string in Python 3
-    """
-    if py2:
-        return s
-    return s.decode()
-
-def w(s):
-    """
-    Wrap a given string to be expected output
-    """
-    if s:
-        return s + os.linesep
-    return s
-
-def quickcall(*args):
-    cmd = [sys.executable, '-m']
-    for arg in args:
-        if isinstance(arg, basestring):
-            cmd.extend(shlex.split(arg))
-        elif isinstance(arg, collections.Sequence):
-            cmd.extend(arg)
-        else:
-            cmd.push(str(arg))
-    process = Popen(cmd, stdout=PIPE, stderr=PIPE)
-    stdout, stderr = process.communicate()
-    ret = process.returncode
-    return (ds(stdout), ds(stderr), ret)
+def test_help():
+    stdout, stderr, exitcode = quickcall(checkguard, '--help')
+    assert_equal(exitcode, 0)
 
 def test_utf8_with_bom_guard():
     path = 'tests/data/utf8-bom-guard.h'

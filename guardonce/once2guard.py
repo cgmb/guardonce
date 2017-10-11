@@ -148,8 +148,8 @@ def main():
             metavar='template',
             default='#endif\n',
             help='use the given template for the inserted #endif. '
-            'The include guard can be referenced in the template with %. '
-            'Any other uses of % must be escaped as %%.')
+            'The include guard can be referenced in the template with %%. '
+            'Any other uses of %% must be escaped as %%%%.')
     parser.add_argument('-l','--endif-newline',
             action='store_true',
             dest='endif_newline',
