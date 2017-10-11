@@ -1,0 +1,3 @@
+﻿struct Match {
+  bool ok;
+};

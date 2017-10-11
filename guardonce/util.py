@@ -12,6 +12,8 @@ from fnmatch import fnmatch
 from functools import partial
 from itertools import islice
 
+py2 = sys.version_info < (3,)
+
 def ends_with_blank_line(contents):
     """
     Returns true if the given string ends with a line that is either empty or
@@ -110,12 +112,29 @@ def index_guard_end(contents, pos=0, endpos=None):
         raise ValueError('guard end not found')
     return match.span()
 
+class FileMetadata:
+    """
+    Information about a file's encoding and line endings.
+    """
+    def __init__(self):
+        self.bom = False
+        self.crlf = False
+
+bom = '\xef\xbb\xbf' if py2 else '\ufeff'
+
 def get_file_contents(filename):
     with open(filename, 'r') as f:
-        return f.read()
+        contents = f.read()
+        metadata = FileMetadata()
+        if contents.startswith(bom):
+            contents = contents[len(bom):]
+            metadata.bom = True
+        return (contents, metadata)
 
-def write_file_contents(filename, contents):
+def write_file_contents(filename, contents, metadata):
     with open(filename, 'w') as f:
+        if metadata.bom:
+            contents = bom + contents
         f.write(contents)
 
 def print_error(error):

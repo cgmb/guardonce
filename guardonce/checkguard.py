@@ -42,7 +42,7 @@ def is_protected(contents, options):
         or options.accept_once and is_protected_by_once(contents))
 
 def is_file_protected(filename, options):
-    contents = get_file_contents(filename)
+    contents, metadata = get_file_contents(filename)
     return is_protected(contents, options)
 
 def process_file(filepath, filename, options):

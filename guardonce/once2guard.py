@@ -85,11 +85,11 @@ def process_file(filepath, filename, options):
     options.guard = options.create_guard(ctx)
 
     try:
-        contents = get_file_contents(filepath)
+        contents, metadata = get_file_contents(filepath)
         new_contents = replace_pragma_once(contents, options.guard,
             options.endif_template, options.endif_newline)
         if new_contents:
-            write_file_contents(filepath, new_contents)
+            write_file_contents(filepath, new_contents, metadata)
     except Exception as e:
         print('Error processing {0}:\n\t({1}) {2}'.format(filepath,
             e.__class__.__name__, str(e)), file=sys.stderr)
