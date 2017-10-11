@@ -10,10 +10,10 @@ it and try. Just in case the project has changed since this guide was written,
 we'll checkout the same version I used.
 
 ```bash
-git clone https://github.com/abseil/abseil-cpp
+git clone https://github.com/abseil/abseil-cpp.git
 cd abseil-cpp
 git checkout cc4bed2d74f7c8717e31f9579214ab52a9c9c610
-checkguard -r --only guard -p 'path | upper | append _' absl
+checkguard -r --only guard -p "path | upper | append _" absl
 ```
 
 There should be nothing printed, indicating that every header has an include
@@ -27,7 +27,7 @@ take very long. Doing the check also gives you the confidence to specify an
 expected pattern for `guard2once` to look for when converting, like so:
 
 ```bash
-guard2once -r -p 'path | upper | append _' absl
+guard2once -r -p "path | upper | append _" absl
 ```
 
 A simple `guard2once -r absl` would have been sufficient, since `guard2once`
@@ -40,7 +40,7 @@ as we passed to `guard2once`. Though, Abseil has a comment after the #endif, so
 we'll need to supply a template to get the exact same #endif style.
 
 ```bash
-once2guard -r -p 'path | upper | append _' -s '#endif  // %\n' absl
+once2guard -r -p "path | upper | append _" -s "#endif  // %\n" absl
 ```
 
 Checking `git diff` should show that the round-trip from include guards
@@ -100,7 +100,7 @@ After looking through a few of these files, it appears that files ending in
 guard. We can add them to our exclude list.
 
 ```bash
-checkguard -r --only once -e='*-inl.h' -e='*.cpp.h' -e='*-impl.h' folly
+checkguard -r --only once -e="*-inl.h" -e="*.cpp.h" -e="*-impl.h" folly
 ```
 
 Now `checkguard` has no complaints. Great! Strictly speaking, we didn't really
@@ -115,7 +115,7 @@ initials, and make it all uppercase to match our coding standard's naming
 guidelines for macro names.
 
 ```bash
-once2guard -r -p 'path | prepend fb_ | upper' folly
+once2guard -r -p "path | prepend fb_ | upper" folly
 ```
 
 If we take a look at the output of `git diff`, we can see that our headers now
@@ -144,12 +144,12 @@ index 21cf55e..767ae47 100644
 ```
 
 That pattern is a little hard to read, though. Not a big deal, but maybe a
-slightly different pattern would be better. Let's try again, using `snake` to
-separate words in the filename.
+slightly different pattern would be better. Let's throw away our changes and
+try again, using `snake` to separate words in the filename.
 
 ```bash
-git checkout . # throw away our previous changes
-once2guard -r -p 'path | snake | prepend fb_ | upper' folly
+git checkout .
+once2guard -r -p "path | snake | prepend fb_ | upper" folly
 ```
 
 Taking a look through our diff output again, I think the pattern is much
@@ -177,8 +177,8 @@ index 21cf55e..24c310f 100644
 +#endif
 ```
 
-The raison d'etre for guardonce, though, is to make switching back easy. Let's
-do it.
+Of course, guardonce would be nothing if it couldn't make switching back easy.
+Let's do it.
 
 ```bash
 guard2once -r folly
