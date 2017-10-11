@@ -121,9 +121,10 @@ class FileMetadata:
         self.crlf = False
 
 bom = '\xef\xbb\xbf' if py2 else '\ufeff'
+open_kwargs = {} if py2 else {'encoding':'utf8'}
 
 def get_file_contents(filename):
-    with open(filename, 'r') as f:
+    with open(filename, 'r', **open_kwargs) as f:
         contents = f.read()
         metadata = FileMetadata()
         if contents.startswith(bom):
@@ -132,7 +133,7 @@ def get_file_contents(filename):
         return (contents, metadata)
 
 def write_file_contents(filename, contents, metadata):
-    with open(filename, 'w') as f:
+    with open(filename, 'w', **open_kwargs) as f:
         if metadata.bom:
             contents = bom + contents
         f.write(contents)
