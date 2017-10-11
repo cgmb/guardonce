@@ -8,11 +8,9 @@ __pycache__/
 /re
 /sys
 
-# test folders
-danger_zone/
-
 # virtual environment
 /venv/
+/venv3/
 
 # editor files
 *.swp
