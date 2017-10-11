@@ -13,7 +13,7 @@ from .pattern_compiler import compile_pattern, ParserError
 from .util import (index_pragma_once, get_file_contents, write_file_contents,
     apply_to_headers, ends_with_blank_line, py2)
 
-__version__ = "2.2.0"
+__version__ = "2.2.1"
 
 class Template:
     """

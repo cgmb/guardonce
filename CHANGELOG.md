@@ -1,3 +1,9 @@
+## [v2.2.1] | 2017-10-10
+- [[Issue #20]] Fixed --endif-style for UTF-8 files with Python 2
+- [[Issue #21]] Fixed handling UTF-8 files on Windows in Python 3
+- [[Issue #22]] Improved error reporting for UTF-16 and UTF-32 on Python 3
+- [[Issue #23]] Fixed first line of file being ignored for UTF-8 with BOM
+
 ## [v2.2.0] | 2017-10-04
 - Added support for negative values to 'path' command
 - Added 'parents' command to pattern language
@@ -22,6 +28,7 @@
 ## [v1.0.0] | 2016-07-22
 - Ex post facto acknowledgement that this project was stable.
 
+[v2.2.1]: https://github.com/cgmb/guardonce/compare/v2.2.0...v2.2.1
 [v2.2.0]: https://github.com/cgmb/guardonce/compare/v2.1.0...v2.2.0
 [v2.1.0]: https://github.com/cgmb/guardonce/compare/v2.0.0...v2.1.0
 [v2.0.0]: https://github.com/cgmb/guardonce/compare/v1.0.0...v2.0.0
@@ -34,3 +41,7 @@
 [Issue #15]: https://github.com/cgmb/guardonce/issues/15
 [Issue #16]: https://github.com/cgmb/guardonce/issues/16
 [Issue #19]: https://github.com/cgmb/guardonce/issues/19
+[Issue #20]: https://github.com/cgmb/guardonce/issues/20
+[Issue #21]: https://github.com/cgmb/guardonce/issues/21
+[Issue #22]: https://github.com/cgmb/guardonce/issues/22
+[Issue #23]: https://github.com/cgmb/guardonce/issues/23

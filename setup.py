@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name = 'guardonce',
-    version = '2.2.0',
+    version = '2.2.1',
     description = 'Utilities for converting from C/C++ include guards to #pragma once and back again',
     license = 'MIT',
     url = 'https://github.com/cgmb/guardonce',
