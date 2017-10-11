@@ -1,3 +1,6 @@
+## [v2.2.2] | 2017-10-11
+- [[Issue #24]] Fixed once2guard --help
+
 ## [v2.2.1] | 2017-10-10
 - [[Issue #20]] Fixed --endif-style for UTF-8 files with Python 2
 - [[Issue #21]] Fixed handling UTF-8 files on Windows in Python 3
@@ -28,6 +31,7 @@
 ## [v1.0.0] | 2016-07-22
 - Ex post facto acknowledgement that this project was stable.
 
+[v2.2.2]: https://github.com/cgmb/guardonce/compare/v2.2.1...v2.2.2
 [v2.2.1]: https://github.com/cgmb/guardonce/compare/v2.2.0...v2.2.1
 [v2.2.0]: https://github.com/cgmb/guardonce/compare/v2.1.0...v2.2.0
 [v2.1.0]: https://github.com/cgmb/guardonce/compare/v2.0.0...v2.1.0
@@ -45,3 +49,4 @@
 [Issue #21]: https://github.com/cgmb/guardonce/issues/21
 [Issue #22]: https://github.com/cgmb/guardonce/issues/22
 [Issue #23]: https://github.com/cgmb/guardonce/issues/23
+[Issue #24]: https://github.com/cgmb/guardonce/issues/24
