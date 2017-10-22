@@ -143,7 +143,7 @@ def print_error(error):
 
 def is_header_file(filename):
     '''Returns true if the given file is identified as a C/C++ header file.'''
-    return filename.endswith(('.h', '.hpp', '.H', '.hh'))
+    return filename.endswith(('.h', '.hpp', '.H', '.hh', '.hxx'))
 
 def is_excluded(filepath, exclusions):
     '''Returns true if the given file matches any of the exclusion patterns.'''
