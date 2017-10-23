@@ -16,13 +16,16 @@ uses a guard pattern that is difficult to specify, please open an issue.
 Returns the file's basename.
 
 ### path
-If recursive, returns the file's path relative to the root directory given to
-the program. If not recursive, returns the path to the file given when invoking
-the program.
+Returns the file's relative path.
 
-Takes an optional argument specifying how many parent directories to include.
-Negative values instead specify how many parent directories to remove.
-When an argument is provided, the result is equivalent to `path | parents <N>`.
+Takes an optional argument specifying how many parent directories to include or
+remove. With no argument, all parent directories are included. A positive
+argument includes that many directories and removes all others, while a negative
+argument removes that many directories and includes all others. When an
+argument is provided, `path <N>` is equivalent to `path | parents <N>`.
+
+Negative arguments are particularly useful for trimming off parts of the
+relative path that were merely for navigating to the project root directory.
 
 | Command |       File        |      Output       |
 |---------|-------------------|-------------------|
