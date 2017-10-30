@@ -27,9 +27,14 @@ class Template:
         self.pieces = gather_pieces(fmtstr, self.placeholder)
 
     def sub(self, guard):
-        return ''.join([guard if x == self.placeholder else x for x in self.pieces])
+        return ''.join([guard if x is self.placeholder else x for x in self.pieces])
 
 def gather_pieces(fmtstr, placeholder):
+    """
+    Takes a format string where % marks replacements by placeholder, and %%
+    marks replacements by %. The returned object is a list of substrings and
+    placeholders.
+    """
     pieces = []
     substr = []
     escape = False
