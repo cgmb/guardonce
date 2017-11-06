@@ -60,16 +60,25 @@ customize it. Maybe take a look through `once2guard --help` or check out a
 [walkthrough](docs/Walkthrough.md) for some examples.
 
 ## How to Install:
-Whether you use Python 2 or Python 3, these tools can be installed with
-`python -m pip install guardonce`.
+Whether you use Python 2 or Python 3, these tools can be installed with pip.
+Run `python -m pip install guardonce` and you're off to the races.
 
-It is also possible to instead just run from the repository. However, you'll
-need to use slightly different commands to do so. When you're in the source
-directory, you can invoke the tools as python modules. For example:
+If you'd rather not use pip, it is possible to instead just run from the
+repository. However, you'll need to use slightly different commands. Add the
+repository to your `PYTHONPATH` and invoke the tools as python modules, as
+illustrated below.
 
+### Linux / OSX
 ```
 git clone https://github.com/cgmb/guardonce.git
-cd guardonce
+export PYTHONPATH=$(pwd)/guardonce
+python -m guardonce.checkguard -r ~/myproject
+```
+
+### Windows
+```
+git clone https://github.com/cgmb/guardonce.git
+set PYTHONPATH=%CD%/guardonce
 python -m guardonce.checkguard -r ~/myproject
 ```
 
