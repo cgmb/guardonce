@@ -71,14 +71,14 @@ illustrated below.
 ### Linux / OSX
 ```
 git clone https://github.com/cgmb/guardonce.git
-export PYTHONPATH=$(pwd)/guardonce
+export PYTHONPATH="$(pwd)/guardonce"
 python -m guardonce.checkguard -r ~/myproject
 ```
 
 ### Windows
 ```
 git clone https://github.com/cgmb/guardonce.git
-set PYTHONPATH=%CD%/guardonce
+set "PYTHONPATH=%CD%\guardonce"
 python -m guardonce.checkguard -r ~/myproject
 ```
 
