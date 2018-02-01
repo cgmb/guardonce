@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2016-2017 Cordell Bloor
+# Copyright (C) 2016-2018 Cordell Bloor
 # Published under the MIT License
 
 """Shared utilities between checkguard, guard2once and once2guard."""
@@ -123,20 +123,35 @@ class FileMetadata:
 bom = '\xef\xbb\xbf' if py2 else '\ufeff'
 open_kwargs = {} if py2 else {'encoding':'utf8'}
 
+def process_input(contents):
+    """
+    Analyse file contents and strip bom if necessary.
+    """
+    metadata = FileMetadata()
+    if contents.startswith(bom):
+        contents = contents[len(bom):]
+        metadata.bom = True
+    return (contents, metadata);
+
 def get_file_contents(filename):
+    if filename is None:
+        return process_input(sys.stdin.read())
     with open(filename, 'r', **open_kwargs) as f:
-        contents = f.read()
-        metadata = FileMetadata()
-        if contents.startswith(bom):
-            contents = contents[len(bom):]
-            metadata.bom = True
-        return (contents, metadata)
+        return process_input(f.read())
+
+def process_output(contents, metadata):
+    """
+    Prepend bom if necessary.
+    """
+    if metadata.bom:
+        contents = bom + contents
+    return contents
 
 def write_file_contents(filename, contents, metadata):
+    if filename is None:
+        return sys.stdout.write(process_output(contents, metadata))
     with open(filename, 'w', **open_kwargs) as f:
-        if metadata.bom:
-            contents = bom + contents
-        f.write(contents)
+        return f.write(process_output(contents, metadata))
 
 def print_error(error):
     print(error, file=sys.stderr)

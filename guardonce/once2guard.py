@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2016-2017 Cordell Bloor
+# Copyright (C) 2016-2018 Cordell Bloor
 # Published under the MIT License
 
 """Replace #pragma once with C and C++ include guards."""
@@ -93,8 +93,11 @@ def process_file(filepath, filename, options):
         contents, metadata = get_file_contents(filepath)
         new_contents = replace_pragma_once(contents, options.guard,
             options.endif_template, options.endif_newline)
+        if options.stdout and new_contents is None:
+            new_contents = contents
         if new_contents:
-            write_file_contents(filepath, new_contents, metadata)
+            output_path = None if options.stdout else filepath
+            write_file_contents(output_path, new_contents, metadata)
     except Exception as e:
         print('Error processing {0}:\n\t({1}) {2}'.format(filepath,
             e.__class__.__name__, str(e)), file=sys.stderr)
@@ -177,6 +180,10 @@ def main():
             'a ? matches any single character; '
             '[_] matches any characters within the brackets; '
             'and [!_] matches any characters not within the brackets.')
+    parser.add_argument('--stdout',
+            action='store_true',
+            dest='stdout',
+            help='write output to stdout')
     args = parser.parse_args()
 
     class Options:
@@ -185,6 +192,16 @@ def main():
     options.create_guard = process_guard_pattern(args.pattern)
     options.endif_template = Template(decode_escapes(args.endif_template))
     options.endif_newline = args.endif_newline
+    options.stdout = args.stdout
+
+    if options.stdout and args.recursive:
+        print('The recursive option cannot be used when printing to stdout',
+            file=sys.stderr)
+        sys.exit(1)
+    elif options.stdout and len(args.files) > 1:
+        print('Only one file can be specified at a time when printing to stdout',
+            file=sys.stderr)
+        sys.exit(1)
 
     for f in args.files:
         if os.path.isdir(f):
