@@ -1,3 +1,6 @@
+## [v2.3.0] | 2018-02-05
+- [[Issue #25]] Added --stdout option
+
 ## [v2.2.2] | 2017-10-11
 - [[Issue #24]] Fixed once2guard --help
 
@@ -31,6 +34,7 @@
 ## [v1.0.0] | 2016-07-22
 - Ex post facto acknowledgement that this project was stable.
 
+[v2.3.0]: https://github.com/cgmb/guardonce/compare/v2.2.2...v2.3.0
 [v2.2.2]: https://github.com/cgmb/guardonce/compare/v2.2.1...v2.2.2
 [v2.2.1]: https://github.com/cgmb/guardonce/compare/v2.2.0...v2.2.1
 [v2.2.0]: https://github.com/cgmb/guardonce/compare/v2.1.0...v2.2.0
@@ -50,3 +54,4 @@
 [Issue #22]: https://github.com/cgmb/guardonce/issues/22
 [Issue #23]: https://github.com/cgmb/guardonce/issues/23
 [Issue #24]: https://github.com/cgmb/guardonce/issues/24
+[Issue #25]: https://github.com/cgmb/guardonce/issues/25
