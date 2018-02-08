@@ -1,4 +1,5 @@
 ## [v2.3.0] | 2018-02-05
+- Added `*.hxx` to list of header extensions for --recursive
 - [[Issue #25]] Added --stdout option
 
 ## [v2.2.2] | 2017-10-11
