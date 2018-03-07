@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2017 Cordell Bloor
+# Copyright (C) 2017-2018 Cordell Bloor
 # Published under the MIT License
 
+from functools import wraps
+from shutil import copy2, copytree, rmtree
 from subprocess import Popen, PIPE
+from tempfile import mkdtemp
 import collections
 import os
 import shlex
@@ -28,6 +31,44 @@ def w(s):
     if s:
         return s + os.linesep
     return s
+
+# http://youtu.be/siwpn14IE7E
+def setup_danger_zone(datapath):
+    """
+    Create a writeable sandbox for the test to operate on.
+    """
+    tempdir = mkdtemp()
+    fullpath = ''
+    if os.path.isdir(datapath):
+        copytree(datapath, tempdir)
+    else:
+        copy2(datapath, tempdir)
+        fullpath = os.path.join(tempdir, os.path.basename(datapath))
+    return (tempdir, fullpath)
+
+def teardown_danger_zone(path):
+    """
+    Destroy the sandbox at the given path.
+    """
+    rmtree(path)
+
+def with_sandbox(datapath):
+    """
+    Decorator that sets up and tears down a writable sandbox.
+    """
+    def decorator(fn):
+        @wraps(fn)
+        def setup_and_teardown(*args, **kwargs):
+            sandbox_path, fullpath = setup_danger_zone(datapath)
+            r = fn(*args, sandbox=sandbox_path, path=fullpath, **kwargs)
+            teardown_danger_zone(sandbox_path)
+            return r
+        return setup_and_teardown
+    return decorator
+
+def contents_of(filename):
+    with open(filename, 'r') as f:
+        return f.read()
 
 def quickcall(*args):
     cmd = [sys.executable, '-m']
