@@ -67,14 +67,14 @@ def with_sandbox(datapath):
     return decorator
 
 def contents_of(filename):
-    with open(filename, 'r') as f:
-        return f.read()
+    with open(filename, 'rb') as f:
+        return ds(f.read())
 
 def quickcall(*args):
     cmd = [sys.executable, '-m']
     for arg in args:
         if isinstance(arg, basestring):
-            cmd.extend(shlex.split(arg))
+            cmd.extend(shlex.split(arg, False, False))
         elif isinstance(arg, collections.Sequence):
             cmd.extend(arg)
         else:
