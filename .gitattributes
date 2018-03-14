@@ -1,0 +1,2 @@
+# the test data must be identical on all platforms
+/tests/data/**      -text
