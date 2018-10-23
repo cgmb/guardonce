@@ -45,29 +45,47 @@ def next_line(contents, start):
            return i + 1
     return len(contents)
 
+def make_regex(pattern, guard_symbol=None):
+    """
+    Performs a few substitutions so the pattern can use format-style
+    shorthands, then compiles and returns the regex.
+    """
+    replacements = {
+        's' : r"[ \t]", # space characters
+        'guard' : guard_symbol
+    }
+    return re.compile(pattern.format(**replacements), re.MULTILINE)
+
+def make_regexes(patterns, guard_symbol=None):
+    """
+    Yields a generator that lazily compiles the given regex patterns.
+    """
+    for pattern in patterns:
+        yield make_regex(pattern, guard_symbol)
+
 def guess_guard(contents):
     """
     Returns the guard, as well as the start and end indexes of the include
     guard from the start of the file, or throws ValueError if not found.
     Comments are not supported.
     """
-    regex = re.compile(r"^[ \t]*\#[ \t]*ifndef[ \t]+([\w]+)"
-        + r"[ \t]*\n[ \t]*\#[ \t]*define[ \t]+\1([ \t]+1)?[ \t]*$",
-        re.MULTILINE)
-    guard_found = False
-    for match in regex.finditer(contents):
-        # if it matches our regex, it's probably a guard, but check
-        # that there's some content within to be a little more sure
-        nextline_start = next_nonempty_line(contents, match.end())
-        nextline_end = next_line(contents, nextline_start)
-        try:
-            index_guard_end(contents, nextline_start, nextline_end)
-        except ValueError as e:
-            guard_found = True
-            break
-    if not guard_found:
-        raise ValueError('guard start not found')
-    return (match.group(1),) + match.span()
+    patterns = [
+        r"^{s}*[#]{s}*ifndef{s}+(?P<guard>[\w]+){s}*\n"
+            + r"{s}*[#]{s}*define{s}+(?P=guard)({s}+1)?{s}*$",
+        r"^{s}*[#]{s}*if{s}*[!]{s}*defined(?:{s}+|{s}*(?P<paren>[(]){s}*)(?P<guard>[\w]+){s}*(?(paren)[)]){s}*\n"
+            + r"{s}*[#]{s}*define{s}+(?P=guard)({s}+1)?{s}*$",
+    ]
+    for regex in make_regexes(patterns):
+        for match in regex.finditer(contents):
+            # if it matches our regex, it's probably a guard, but check
+            # that there's some content within to be a little more sure
+            nextline_start = next_nonempty_line(contents, match.end())
+            nextline_end = next_line(contents, nextline_start)
+            try:
+                index_guard_end(contents, nextline_start, nextline_end)
+            except ValueError as e:
+                return (match.group('guard'),) + match.span()
+    raise ValueError('guard start not found')
 
 def index_pragma_once(contents):
     """
@@ -75,26 +93,28 @@ def index_pragma_once(contents):
     the start of the file, or throws ValueError if not found. Comments
     are not supported.
     """
-    regex = re.compile(r"^[ \t]*\#[ \t]*pragma[ \t]+once[ \t]*$",
-        re.MULTILINE)
+    regex = make_regex(r"^{s}*\#{s}*pragma{s}+once{s}*$")
     match = regex.search(contents)
-    if not match:
-        raise ValueError('pragma once not found')
-    return match.span()
+    if match:
+        return match.span()
+    raise ValueError('pragma once not found')
 
 def index_guard_start(contents, guard_symbol):
     """
     Returns the start and end indexes of the include guard from the start of the
     file, or throws ValueError if not found. Comments are not supported.
     """
-    regex = re.compile(r"^[ \t]*\#[ \t]*ifndef[ \t]+" + guard_symbol
-        + r"[ \t]*\n[ \t]*\#[ \t]*define[ \t]+" + guard_symbol
-        + r"([ \t]+1)?[ \t]*$",
-        re.MULTILINE)
-    match = regex.search(contents)
-    if not match:
-        raise ValueError('guard start not found')
-    return match.span()
+    patterns = [
+        r"^{s}*[#]{s}*ifndef{s}+{guard}{s}*\n"
+            + r"{s}*[#]{s}*define{s}+{guard}(?:{s}+1)?{s}*$",
+        r"^{s}*[#]{s}*if{s}*[!]{s}*defined(?:{s}+|{s}*(?P<paren>[(]){s}*){guard}{s}*(?(paren)[)]){s}*\n"
+            + r"{s}*[#]{s}*define{s}+{guard}({s}+1)?{s}*$",
+    ]
+    for regex in make_regexes(patterns, guard_symbol):
+        match = regex.search(contents)
+        if match:
+            return match.span()
+    raise ValueError('guard start not found')
 
 def index_guard_end(contents, pos=0, endpos=None):
     """
@@ -103,14 +123,13 @@ def index_guard_end(contents, pos=0, endpos=None):
     """
     if endpos is None:
         endpos = len(contents)
-    regex = re.compile(r"^[ \t]*\#[ \t]*endif([/ \t]+.*|[ \t]*)$",
-        re.MULTILINE)
+    regex = make_regex(r"^{s}*[#]{s}*endif{s}*(?:[/][/*].*)?$")
     match = None
     for match in regex.finditer(contents, pos, endpos):
         pass
-    if not match:
-        raise ValueError('guard end not found')
-    return match.span()
+    if match:
+        return match.span()
+    raise ValueError('guard end not found')
 
 class FileMetadata:
     """

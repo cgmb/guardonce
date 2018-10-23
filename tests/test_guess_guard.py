@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2016-2017 Cordell Bloor
+# Copyright (C) 2016-2018 Cordell Bloor
 # Published under the MIT License
 
 from nose.tools import *
@@ -121,5 +121,91 @@ def test_define_with_space():
 #define ONE 1
  
 #endif
+'''
+    go.guess_guard(contents)
+
+def test_if_defined():
+    contents = '''
+#if !defined(MATCH_H)
+#define MATCH_H
+'''
+    g,s,e = go.guess_guard(contents)
+    assert_equals(g, 'MATCH_H')
+    assert_equals(s, 1)
+    assert_equals(e, 38)
+
+def test_if_defined_no_parentheses():
+    contents = '''
+#if !defined MATCH_H
+#define MATCH_H
+'''
+    g,s,e = go.guess_guard(contents)
+    assert_equals(g, 'MATCH_H')
+    assert_equals(s, 1)
+    assert_equals(e, 37)
+
+def test_if_defined_space_after_bang():
+    contents = '''
+#if ! defined(MATCH_H)
+#define MATCH_H
+'''
+    g,s,e = go.guess_guard(contents)
+    assert_equals(g, 'MATCH_H')
+    assert_equals(s, 1)
+    assert_equals(e, 39)
+
+def test_if_defined_space_before_parentheses():
+    contents = '''
+#if !defined (MATCH_H)
+#define MATCH_H
+'''
+    g,s,e = go.guess_guard(contents)
+    assert_equals(g, 'MATCH_H')
+    assert_equals(s, 1)
+    assert_equals(e, 39)
+
+def test_if_defined_space_before_symbol():
+    contents = '''
+#if !defined( MATCH_H)
+#define MATCH_H
+'''
+    g,s,e = go.guess_guard(contents)
+    assert_equals(g, 'MATCH_H')
+    assert_equals(s, 1)
+    assert_equals(e, 39)
+
+def test_if_defined_space_after_symbol():
+    contents = '''
+#if !defined(MATCH_H )
+#define MATCH_H
+'''
+    g,s,e = go.guess_guard(contents)
+    assert_equals(g, 'MATCH_H')
+    assert_equals(s, 1)
+    assert_equals(e, 39)
+
+def test_if_defined_space_before_newline():
+    contents = '''
+#if !defined(MATCH_H) 
+#define MATCH_H
+'''
+    g,s,e = go.guess_guard(contents)
+    assert_equals(g, 'MATCH_H')
+    assert_equals(s, 1)
+    assert_equals(e, 39)
+
+@raises(ValueError)
+def test_if_defined_extra_junk_before_newline():
+    contents = '''
+#if !defined(MATCH_H) WEIRD_HUH
+#define MATCH_H
+'''
+    go.guess_guard(contents)
+
+@raises(ValueError)
+def test_if_defined_extra_junk_in_defined():
+    contents = '''
+#if !defined(MATCH_H WEIRD_HUH)
+#define MATCH_H
 '''
     go.guess_guard(contents)

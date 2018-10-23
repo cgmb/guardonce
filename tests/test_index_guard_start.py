@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2016-2017 Cordell Bloor
+# Copyright (C) 2016-2018 Cordell Bloor
 # Published under the MIT License
 
 from nose.tools import *
@@ -114,3 +114,82 @@ def test_define_with_value_1():
     s,e = go.index_guard_start(contents, 'MATCH_H')
     assert_equals(s, 1)
     assert_equals(e, 34)
+
+def test_if_defined():
+    contents = '''
+#if !defined(MATCH_H)
+#define MATCH_H
+'''
+    s,e = go.index_guard_start(contents, 'MATCH_H')
+    assert_equals(s, 1)
+    assert_equals(e, 38)
+
+def test_if_defined_no_parentheses():
+    contents = '''
+#if !defined MATCH_H
+#define MATCH_H
+'''
+    s,e = go.index_guard_start(contents, 'MATCH_H')
+    assert_equals(s, 1)
+    assert_equals(e, 37)
+
+def test_if_defined_space_after_bang():
+    contents = '''
+#if ! defined(MATCH_H)
+#define MATCH_H
+'''
+    s,e = go.index_guard_start(contents, 'MATCH_H')
+    assert_equals(s, 1)
+    assert_equals(e, 39)
+
+def test_if_defined_space_before_parentheses():
+    contents = '''
+#if !defined (MATCH_H)
+#define MATCH_H
+'''
+    s,e = go.index_guard_start(contents, 'MATCH_H')
+    assert_equals(s, 1)
+    assert_equals(e, 39)
+
+def test_if_defined_space_before_symbol():
+    contents = '''
+#if !defined( MATCH_H)
+#define MATCH_H
+'''
+    s,e = go.index_guard_start(contents, 'MATCH_H')
+    assert_equals(s, 1)
+    assert_equals(e, 39)
+
+def test_if_defined_space_after_symbol():
+    contents = '''
+#if !defined(MATCH_H )
+#define MATCH_H
+'''
+    s,e = go.index_guard_start(contents, 'MATCH_H')
+    assert_equals(s, 1)
+    assert_equals(e, 39)
+
+def test_if_defined_space_before_newline():
+    contents = '''
+#if !defined(MATCH_H) 
+#define MATCH_H
+'''
+    s,e = go.index_guard_start(contents, 'MATCH_H')
+    assert_equals(s, 1)
+    assert_equals(e, 39)
+
+@raises(ValueError)
+def test_if_defined_extra_junk_before_newline():
+    contents = '''
+#if !defined(MATCH_H) WEIRD_HUH
+#define MATCH_H
+'''
+    go.index_guard_start(contents, 'MATCH_H')
+
+@raises(ValueError)
+def test_if_defined_extra_junk_in_defined():
+    contents = '''
+#if !defined(MATCH_H WEIRD_HUH)
+#define MATCH_H
+'''
+    go.index_guard_start(contents, 'MATCH_H')
