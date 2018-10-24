@@ -54,16 +54,19 @@ def process_file(filepath, filename, options):
 
     options.guard = options.create_guard(ctx)
 
+    ok = True
     if options.print_guard:
         print(options.guard)
-        return
+        return ok
 
     try:
         if not is_file_protected(filepath, options):
             print(filepath)
     except Exception as e:
+        ok = False
         print('Error processing {0}:\n\t({1}) {2}'.format(filepath,
             e.__class__.__name__, str(e)), file=sys.stderr)
+    return ok
 
 def process_pattern(guard_pattern):
     create_guard = lambda ctx: None
@@ -134,16 +137,19 @@ def main():
     options.create_guard = process_pattern(args.pattern)
     options.print_guard = args.print_guard
 
+    ok = True
     for f in args.files:
         if os.path.isdir(f):
             if args.recursive:
                 process = partial(process_file, options=options)
-                apply_to_headers(process, f, args.exclusions)
+                ok &= apply_to_headers(process, f, args.exclusions)
             else:
                 print('"%s" is a directory' % f, file=sys.stderr)
                 sys.exit(1)
         else:
-            process_file(f, os.path.basename(f), options)
+            ok &= process_file(f, os.path.basename(f), options)
+    if not ok:
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()

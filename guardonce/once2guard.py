@@ -47,6 +47,7 @@ def process_file(filepath, filename, options):
 
     options.guard = options.create_guard(ctx)
 
+    success = True
     try:
         contents, metadata = get_file_contents(filepath)
         new_contents = replace_pragma_once(contents, options.guard,
@@ -57,8 +58,10 @@ def process_file(filepath, filename, options):
             output_path = None if options.stdout else filepath
             write_file_contents(output_path, new_contents, metadata)
     except Exception as e:
+        success = False
         print('Error processing {0}:\n\t({1}) {2}'.format(filepath,
             e.__class__.__name__, str(e)), file=sys.stderr)
+    return success
 
 def process_guard_pattern(pattern):
     create_guard = lambda ctx: None
@@ -161,16 +164,19 @@ def main():
             file=sys.stderr)
         sys.exit(1)
 
+    ok = True
     for f in args.files:
         if os.path.isdir(f):
             if args.recursive:
                 process = partial(process_file, options=options)
-                apply_to_headers(process, f, args.exclusions)
+                ok &= apply_to_headers(process, f, args.exclusions)
             else:
                 print('"%s" is a directory' % f, file=sys.stderr)
                 sys.exit(1)
         else:
-            process_file(f, os.path.basename(f), options)
+            ok &= process_file(f, os.path.basename(f), options)
+    if not ok:
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()

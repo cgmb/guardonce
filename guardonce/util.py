@@ -172,9 +172,6 @@ def write_file_contents(filename, contents, metadata):
     with open(filename, 'w', **open_kwargs) as f:
         return f.write(process_output(contents, metadata))
 
-def print_error(error):
-    print(error, file=sys.stderr)
-
 def is_header_file(filename):
     '''Returns true if the given file is identified as a C/C++ header file.'''
     return filename.endswith(('.h', '.hpp', '.H', '.hh', '.hxx'))
@@ -184,8 +181,25 @@ def is_excluded(filepath, exclusions):
     return any(map(partial(fnmatch, filepath), exclusions))
 
 def apply_to_headers(func, directory, exclusions):
-    for root, dirs, files in os.walk(directory, onerror=print_error):
+    '''
+    Apply the given function to all the header files in the given directory and
+    all its subdirectories, excluding files and subdirectories matching any
+    pattern in the list of exclusions.
+    '''
+    # Workaround for lack of nonlocal keyword in Python 2.7
+    class Status:
+        pass
+    status = Status()
+    status.ok = True
+
+    def report_error(error):
+        '''Report an error to the user, but continue processing.'''
+        status.ok = False
+        print(error, file=sys.stderr)
+
+    for root, dirs, files in os.walk(directory, onerror=report_error):
         for filename in files:
             filepath = os.path.join(root, filename)
             if is_header_file(filename) and not is_excluded(filepath, exclusions):
-                func(filepath, filename)
+                status.ok &= func(filepath, filename)
+    return status.ok

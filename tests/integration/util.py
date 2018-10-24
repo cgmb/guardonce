@@ -39,7 +39,9 @@ def setup_danger_zone(datapath):
     """
     tempdir = mkdtemp()
     fullpath = ''
-    if os.path.isdir(datapath):
+    if datapath is None:
+        pass
+    elif os.path.isdir(datapath):
         copytree(datapath, tempdir)
     else:
         copy2(datapath, tempdir)
@@ -52,7 +54,7 @@ def teardown_danger_zone(path):
     """
     rmtree(path)
 
-def with_sandbox(datapath):
+def with_sandbox(datapath=None):
     """
     Decorator that sets up and tears down a writable sandbox.
     """
