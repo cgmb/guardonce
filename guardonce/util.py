@@ -139,37 +139,61 @@ class FileMetadata:
         self.bom = False
         self.crlf = False
 
-bom = '\xef\xbb\xbf' if py2 else '\ufeff'
-open_kwargs = {} if py2 else {'encoding':'utf8'}
+bom = b'\xef\xbb\xbf'
+
+def ds(s):
+    """
+    Decodes the given byte string in Python 3.
+    """
+    if py2:
+        return s
+    return s.decode(encoding='utf-8', errors='surrogateescape')
+
+def es(s):
+    """
+    Encodes the given string in Python 3.
+    """
+    if py2:
+        return s
+    return s.encode(encoding='utf-8', errors='surrogateescape')
 
 def process_input(contents):
     """
-    Analyse file contents and strip bom if necessary.
+    Analyse file contents and simplify. Strip the BOM if necessary,
+    normalize line endings, and decode.
     """
     metadata = FileMetadata()
     if contents.startswith(bom):
         contents = contents[len(bom):]
         metadata.bom = True
+    first_newline_idx = contents.find(b'\n')
+    if first_newline_idx > 0:
+        metadata.crlf = contents.startswith(b'\r', first_newline_idx-1)
+        contents = contents.replace(b'\r\n', b'\n')
+    contents = ds(contents)
     return (contents, metadata);
 
 def get_file_contents(filename):
     if filename is None:
         return process_input(sys.stdin.read())
-    with open(filename, 'r', **open_kwargs) as f:
+    with open(filename, 'rb') as f:
         return process_input(f.read())
 
 def process_output(contents, metadata):
     """
-    Prepend bom if necessary.
+    Undo the operations done in process_input to prepare contents for writing.
     """
+    contents = es(contents)
+    if metadata.crlf:
+        contents = contents.replace(b'\n', b'\r\n')
     if metadata.bom:
         contents = bom + contents
     return contents
 
 def write_file_contents(filename, contents, metadata):
     if filename is None:
-        return sys.stdout.write(process_output(contents, metadata))
-    with open(filename, 'w', **open_kwargs) as f:
+        return sys.stdout.write(ds(process_output(contents, metadata)))
+    with open(filename, 'wb') as f:
         return f.write(process_output(contents, metadata))
 
 def is_header_file(filename):

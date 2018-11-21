@@ -73,7 +73,7 @@ def process_guard_pattern(pattern):
             sys.exit(1)
     return create_guard
 
-def es(ustr):
+def eus(ustr):
     '''
     Encodes the given unicode string to str
     '''
@@ -86,7 +86,7 @@ def decode_escapes(s):
     import re
     import codecs
     def decode_match(match):
-        return es(codecs.decode(match.group(0), 'unicode-escape'))
+        return eus(codecs.decode(match.group(0), 'unicode-escape'))
     # https://stackoverflow.com/a/24519338
     escapes = re.compile(r'''
         ( \\U........      # 8-digit hex escapes
