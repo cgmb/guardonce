@@ -1,3 +1,9 @@
+## [v2.4.0] | 2018-12-02
+- [[Issue #13]] Added support for Linux newlines on Windows and vice versa
+- [[Issue #27]] All tools now return a non-zero error code if there are errors
+- [[Issue #30]] guard2once can now convert `#if !defined(INCLUDE_GUARD)`
+- [[Issue #31]] Added support for all ASCII-compatible file encodings
+
 ## [v2.3.0] | 2018-02-05
 - Added `*.hxx` to list of header extensions for --recursive
 - [[Issue #25]] Added --stdout option
@@ -35,6 +41,7 @@
 ## [v1.0.0] | 2016-07-22
 - Ex post facto acknowledgement that this project was stable.
 
+[v2.4.0]: https://github.com/cgmb/guardonce/compare/v2.3.0...v2.4.0
 [v2.3.0]: https://github.com/cgmb/guardonce/compare/v2.2.2...v2.3.0
 [v2.2.2]: https://github.com/cgmb/guardonce/compare/v2.2.1...v2.2.2
 [v2.2.1]: https://github.com/cgmb/guardonce/compare/v2.2.0...v2.2.1
@@ -46,6 +53,7 @@
 [Issue #9]: https://github.com/cgmb/guardonce/issues/9
 [Issue #10]: https://github.com/cgmb/guardonce/issues/10
 [Issue #12]: https://github.com/cgmb/guardonce/issues/12
+[Issue #13]: https://github.com/cgmb/guardonce/issues/13
 [Issue #14]: https://github.com/cgmb/guardonce/issues/14
 [Issue #15]: https://github.com/cgmb/guardonce/issues/15
 [Issue #16]: https://github.com/cgmb/guardonce/issues/16
@@ -56,3 +64,6 @@
 [Issue #23]: https://github.com/cgmb/guardonce/issues/23
 [Issue #24]: https://github.com/cgmb/guardonce/issues/24
 [Issue #25]: https://github.com/cgmb/guardonce/issues/25
+[Issue #27]: https://github.com/cgmb/guardonce/issues/27
+[Issue #30]: https://github.com/cgmb/guardonce/issues/30
+[Issue #31]: https://github.com/cgmb/guardonce/issues/31

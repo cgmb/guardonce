@@ -14,7 +14,7 @@ from .util import (index_pragma_once, get_file_contents, write_file_contents,
     apply_to_headers, ends_with_blank_line, py2)
 from .template import Template
 
-__version__ = "2.3.0"
+__version__ = "2.4.0"
 
 def replace_pragma_once(contents, guard,
         endif_template=Template('#endif\n'), endif_newline=False):

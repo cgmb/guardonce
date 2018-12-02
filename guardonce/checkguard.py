@@ -13,7 +13,7 @@ from .pattern_compiler import compile_pattern, ParserError
 from .util import (guess_guard, index_guard_start, index_guard_end,
     index_pragma_once, get_file_contents, apply_to_headers)
 
-__version__ = "2.3.0"
+__version__ = "2.4.0"
 
 def is_reserved_token(token):
     return token[0] == '_' or token.find('__') != -1
