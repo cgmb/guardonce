@@ -61,3 +61,11 @@ def test_preserves_lf(path, **kwargs):
     assert_equal(stderr, '')
     assert_equal(stdout, '')
     assert_equal(exitcode, 0)
+
+@with_sandbox('tests/data/cp1252-guard.h')
+def test_utf8_with_bom_guard_stdout(path, **kwargs):
+    stdout, stderr, exitcode = quickcall(guard2once, '-s', path)
+    assert_equal(stderr, '')
+    assert_equal(stdout, '')
+    assert_equal(contents_of(path), contents_of('tests/data/cp1252-once.h'))
+    assert_equal(exitcode, 0)

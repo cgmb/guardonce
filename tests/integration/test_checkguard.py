@@ -35,3 +35,10 @@ def test_file_open_error(sandbox, **kwargs):
     assert_equal(stdout, '')
     assert_not_equal(stderr, '')
     assert_not_equal(exitcode, 0)
+
+def test_cp1252_guard():
+    path = 'tests/data/cp1252-guard.h'
+    stdout, stderr, exitcode = quickcall(checkguard, '-o guard', path)
+    assert_equal(stdout, w(''))
+    assert_equal(stderr, '')
+    assert_equal(exitcode, 0)

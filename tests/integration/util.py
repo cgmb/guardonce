@@ -22,7 +22,7 @@ def ds(s):
     """
     if py2:
         return s
-    return s.decode()
+    return s.decode(encoding='utf-8', errors='surrogateescape')
 
 def w(s):
     """

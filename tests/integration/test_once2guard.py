@@ -36,3 +36,11 @@ def test_preserves_lf(sandbox, path, **kwargs):
     assert_equal(stderr, '')
     assert_equal(exitcode, 0)
     assert_equal(contents_of(path), contents_of('tests/data/newline-lf-guard.h'))
+
+@with_sandbox('tests/data/cp1252-once.h')
+def test_preserves_crlf(sandbox, path, **kwargs):
+    stdout, stderr, exitcode = quickcall(once2guard, '-lp', ['path|remove ' + path + ' |append MATCH_H'], path)
+    assert_equal(stdout, '')
+    assert_equal(stderr, '')
+    assert_equal(exitcode, 0)
+    assert_equal(contents_of(path), contents_of('tests/data/cp1252-guard.h'))
